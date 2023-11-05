@@ -3,16 +3,18 @@ import time
 
 import adafruit_bmp3xx
 import board
+import adafruit_bno055
 
 I2C = board.I2C()
 
 def sensor_reading(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        reading = func(self, *args, **kwargs)
-        self.readings[func.__name__].append((time.time(), reading))
-        return reading
-    return wrapper
+    # @wraps(func)
+    # def wrapper(self, *args, **kwargs):
+    #     reading = func(self, *args, **kwargs)
+    #     self.readings[func.__name__].append((time.time(), reading))
+    #     return reading
+    # return wrapper
+    return func
         
 
 class _BMP390:
@@ -44,6 +46,43 @@ class _BMP390:
 
     def reset(self):
         self.altimeter.reset()
+
+class _BNO055:
+    def __init__(self) -> None:
+        self.imu = adafruit_bno055.BNO055_I2C(I2C)
+
+    @sensor_reading
+    def acceleration(self):
+        return self.imu.acceleration
+
+    @sensor_reading
+    def gravity(self):
+        return self.imu.gravity
+
+    @sensor_reading
+    def gyro(self):
+        return self.imu.gyro
         
+    @sensor_reading
+    def magnetic(self):
+        return self.imu.magnetic
+
+    @sensor_reading
+    def euler(self):
+        return self.imu.euler
+
+    @sensor_reading
+    def quaternion(self):
+        return self.imu.quaternion
+
+    @sensor_reading
+    def linear_acceleration(self):
+        return self.imu.linear_acceleration
+
+    @sensor_reading
+    def temperature(self):
+        return self.imu.temperature
+
 
 ALTIMETER = _BMP390()
+IMU = _BNO055()
