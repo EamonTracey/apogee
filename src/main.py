@@ -36,11 +36,13 @@ HEADERS = [
     'Temperature IMU',
     ]
 
-start = time.time()
 writer = csv.writer(open(OUTPUT_PATH, 'w'))
 writer.writerow(HEADERS)
 
-while True:
+count = 0
+start = time.time()
+for _ in range(200):
+    count += 1
     # Read current time.
     current = time.time() - start
 
@@ -84,34 +86,35 @@ while True:
     # TODO: Compute state.
     state = 0
 
-    writer.writerow([
-        time,
-        state,
-        temperature_alt,
-        pressure,
+    print([
+#        current,
+#        state,
+#        temperature_alt,
+#        pressure,
         altitude,
-        acceleration_x,
-        acceleration_y,
-        acceleration_z,
-        gravity_x,
-        gravity_y,
-        gravity_z,
-        gyro_x,
-        gyro_y,
-        gyro_z,
-        magnetic_x,
-        magnetic_y,
-        magnetic_z,
-        euler_x,
-        euler_y,
-        euler_z,
-        quaternion_x,
-        quaternion_y,
-        quaternion_z,
-        quaternion_w,
-        linear_acceleration_x,
-        linear_acceleration_y,
-        linear_acceleration_z,
-        temperature_imu,
+#        acceleration_x,
+#        acceleration_y,
+#        acceleration_z,
+#        gravity_x,
+#        gravity_y,
+#        gravity_z,
+#        gyro_x,
+#        gyro_y,
+#        gyro_z,
+#        magnetic_x,
+#        magnetic_y,
+#        magnetic_z,
+#        euler_x,
+#        euler_y,
+#        euler_z,
+#        quaternion_x,
+#        quaternion_y,
+#        quaternion_z,
+#        quaternion_w,
+#        linear_acceleration_x,
+#        linear_acceleration_y,
+#        linear_acceleration_z,
+#        temperature_imu,
     ])
 
+print(f"sample rate: {count / (time.time() - start)}")
