@@ -1,15 +1,19 @@
 import csv
+from datetime import datetime
 import time
 
-import kalman
+#import kalman
 import sensors
+from state import State
 
-OUTPUT_PATH = "/home/acs/data/subscale/subscale_0.csv"
+now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
+OUTPUT_DIR = "/home/acs/data/subscale"
+OUTPUT_PATH = f"{OUTPUT_DIR}/data_{now}.csv"
 
 HEADERS = [
     "Time",
     "State",
-    "Temperature ALT",
+    "Temperature BMP",
     "Pressure",
     "Altitude",
     "Acceleration X",
@@ -34,23 +38,26 @@ HEADERS = [
     "Linear Acceleration X",
     "Linear Acceleration Y",
     "Linear Acceleration Z",
-    "Temperature IMU",
+    "Temperature BNO",
 ]
 
 writer = csv.writer(open(OUTPUT_PATH, "w"))
 writer.writerow(HEADERS)
 
+try:
+    sensors.ALTIMETER.zero()
+except Exception as e:
+    print(f"{e}: failed to zero BMP390.")
 
+state = State.GROUND
 
-count = 0
 start = time.time()
-for _ in range(200):
-    count += 1
+while True:
     # Read current time.
     current = time.time() - start
 
     # Read BMP390 sensor.
-    temperature_alt = sensors.ALTIMETER.temperature()
+    temperature_bmp = sensors.ALTIMETER.temperature()
     pressure = sensors.ALTIMETER.pressure()
     altitude = sensors.ALTIMETER.altitude()
 
@@ -84,15 +91,26 @@ for _ in range(200):
     linear_acceleration_x = linear_acceleration[0]
     linear_acceleration_y = linear_acceleration[1]
     linear_acceleration_z = linear_acceleration[2]
-    temperature_imu = sensors.IMU.temperature()
+    temperature_bno = sensors.IMU.temperature()
 
-    # TODO: Compute state.
-    state = 0
+    # Compute state.
+    if state == State.GROUND:
+        if altitude > 20:
+            state = State.LAUNCH
+    elif state == State.LAUNCH:
+        if acceleration_x < 0 and acceleration_y < 0 and acceleration_z < 0:
+            state = State.BURNOUT
+    elif state == State.BURNOUT:
+        ...
+    elif state == State.APOGEE:
+        ...
+    elif state == State.COMPLETE:
+        ...
 
-    print([
+    writer.writerow([
         current,
         state,
-        temperature_alt,
+        temperature_bmp,
         pressure,
         altitude,
         acceleration_x,
@@ -117,7 +135,5 @@ for _ in range(200):
         linear_acceleration_x,
         linear_acceleration_y,
         linear_acceleration_z,
-        temperature_imu,
+        temperature_bno
     ])
-
-print(f"sample rate: {count / (time.time() - start)}")
