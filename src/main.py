@@ -1,43 +1,46 @@
 import csv
 import time
 
+import kalman
 import sensors
 
-OUTPUT_PATH = '/home/acs/data/subscale/subscale_0.csv'
+OUTPUT_PATH = "/home/acs/data/subscale/subscale_0.csv"
 
 HEADERS = [
-    'Time',
-    'State',
-    'Temperature ALT',
-    'Pressure',
-    'Altitude',
-    'Acceleration X',
-    'Acceleration Y',
-    'Acceleration Z',
-    'Gravity X',
-    'Gravity Y',
-    'Gravity Z',
-    'Gyro X',
-    'Gyro Y',
-    'Gyro Z',
-    'Magnetic X',
-    'Magnetic Y',
-    'Magnetic Z',
-    'Euler X',
-    'Euler Y',
-    'Euler Z',
-    'Quaternion X',
-    'Quaternion Y',
-    'Quaternion Z',
-    'Quaternion W',
-    'Linear Acceleration X',
-    'Linear Acceleration Y',
-    'Linear Acceleration Z',
-    'Temperature IMU',
-    ]
+    "Time",
+    "State",
+    "Temperature ALT",
+    "Pressure",
+    "Altitude",
+    "Acceleration X",
+    "Acceleration Y",
+    "Acceleration Z",
+    "Gravity X",
+    "Gravity Y",
+    "Gravity Z",
+    "Gyro X",
+    "Gyro Y",
+    "Gyro Z",
+    "Magnetic X",
+    "Magnetic Y",
+    "Magnetic Z",
+    "Euler X",
+    "Euler Y",
+    "Euler Z",
+    "Quaternion X",
+    "Quaternion Y",
+    "Quaternion Z",
+    "Quaternion W",
+    "Linear Acceleration X",
+    "Linear Acceleration Y",
+    "Linear Acceleration Z",
+    "Temperature IMU",
+]
 
-writer = csv.writer(open(OUTPUT_PATH, 'w'))
+writer = csv.writer(open(OUTPUT_PATH, "w"))
 writer.writerow(HEADERS)
+
+
 
 count = 0
 start = time.time()
@@ -87,34 +90,34 @@ for _ in range(200):
     state = 0
 
     print([
-#        current,
-#        state,
-#        temperature_alt,
-#        pressure,
+        current,
+        state,
+        temperature_alt,
+        pressure,
         altitude,
-#        acceleration_x,
-#        acceleration_y,
-#        acceleration_z,
-#        gravity_x,
-#        gravity_y,
-#        gravity_z,
-#        gyro_x,
-#        gyro_y,
-#        gyro_z,
-#        magnetic_x,
-#        magnetic_y,
-#        magnetic_z,
-#        euler_x,
-#        euler_y,
-#        euler_z,
-#        quaternion_x,
-#        quaternion_y,
-#        quaternion_z,
-#        quaternion_w,
-#        linear_acceleration_x,
-#        linear_acceleration_y,
-#        linear_acceleration_z,
-#        temperature_imu,
+        acceleration_x,
+        acceleration_y,
+        acceleration_z,
+        gravity_x,
+        gravity_y,
+        gravity_z,
+        gyro_x,
+        gyro_y,
+        gyro_z,
+        magnetic_x,
+        magnetic_y,
+        magnetic_z,
+        euler_x,
+        euler_y,
+        euler_z,
+        quaternion_x,
+        quaternion_y,
+        quaternion_z,
+        quaternion_w,
+        linear_acceleration_x,
+        linear_acceleration_y,
+        linear_acceleration_z,
+        temperature_imu,
     ])
 
 print(f"sample rate: {count / (time.time() - start)}")
