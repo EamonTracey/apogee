@@ -1,0 +1,44 @@
+; Read case file.
+/file/read-case "/afs/crc.nd.edu/user/e/etracey/cfd/orig/rocket_40deg.cas.h5"
+
+; Enable energy equation.
+/define/models/energy yes yes yes
+
+; Set turbulence model to K-omega SST.
+/define/models/viscous kw-sst yes
+
+; Set air density to ideal gas.
+/define/materials/change-create air air yes ideal-gas no no no no no no
+
+; Define boundary conditions (mach number + temperature).
+/define/boundary-conditions/pressure-far-field farfield no 0 no 0.5 no 265 yes no 1 no 0 no 0 no no yes 5 10
+/define/boundary-conditions/pressure-far-field inlet no 0 no 0.5 no 265 yes no 1 no 0 no 0 no no yes 5 10
+/define/boundary-conditions/pressure-far-field outlet no 0 no 0.5 no 265 yes no 1 no 0 no 0 no no yes 5 10
+
+; Make wall stationary and no slip.
+/define/boundary-conditions/wall wall 0 no 0 no no no 0 no yes motion-bc-stationary yes shear-bc-noslip no no 0 no 0.5 no 1
+
+; Make all methods second order.
+/solve/set/discretization-scheme/pressure 12
+/solve/set/discretization-scheme/density 1
+/solve/set/discretization-scheme/mom 1
+/solve/set/discretization-scheme/k 1
+/solve/set/discretization-scheme/omega 1
+/solve/set/discretization-scheme/temperature 1
+
+; Create drag force report definition.
+/solve/report-definitions add report-def-drag drag force-vector 1 0 0 scaled no thread-names wall , q
+/solve/report-files add report-file-drag report-defs report-def-drag , file-name "/afs/crc.nd.edu/user/e/etracey/cfd/results/report_40_0.5_265" q
+/solve/report-plots add report-plot-drag report-defs report-def-drag , active yes q
+
+; Disable convergence checks.
+/solve/monitors/residual/check-convergence no no no no no no no
+
+; Solve with many iterations.
+/solve/initialize/set-defaults/x-velocity 200
+/solve/initialize/initialize-flow
+/solve/iterate 1000
+
+; Write case and data files.
+/file/write-case "/afs/crc.nd.edu/user/e/etracey/cfd/results/case_40_0.5_265"
+/file/write-data "/afs/crc.nd.edu/user/e/etracey/cfd/results/data_40_0.5_265"
