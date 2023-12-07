@@ -3,6 +3,7 @@ import time
 
 import adafruit_bmp3xx
 import adafruit_bno055
+import adafruit_mprls
 import board
 import lib.adafruit_mpl3115a2 as adafruit_mpl3115a2
 
@@ -24,7 +25,7 @@ class _BMP390:
         self.altimeter.pressure_oversampling = 1
 
         # Conform to expectations of sensor_reading decorator.
-        self.readings = {"temperature": [], "pressure": [], "altitude": []}
+        # self.readings = {"temperature": [], "pressure": [], "altitude": []}
 
     @sensor_reading
     def temperature(self):
@@ -53,9 +54,6 @@ class _MPL3115A2:
     def __init__(self):
         self.altimeter = adafruit_mpl3115a2.MPL3115A2(I2C)
 
-        # Conform to expectations of sensor_reading decorator.
-        # self.readings = {"temperature": [], "pressure": [], "altitude": []}
-
     @sensor_reading
     def temperature(self):
         return self.altimeter.temperature
@@ -74,6 +72,14 @@ class _MPL3115A2:
             pressure_sum += self.pressure()
             time.sleep(wait)
         self.altimeter.sealevel_pressure = int(pressure_sum / n)
+
+
+class _MPRLS:
+    def __init__(self):
+        self.altimeter = adafruit_mprls.MPRLS(I2C)
+
+    def pressure(self):
+        return self.altimeter.pressure
 
 
 class _BNO055:
@@ -114,5 +120,5 @@ class _BNO055:
         return self.imu.temperature
 
 
-ALTIMETER = _MPL3115A2() #_BMP390()
-#IMU = _BNO055()
+ALTIMETER = _MPRLS() #_MPL3115A2() #_BMP390()
+IMU = _BNO055()
