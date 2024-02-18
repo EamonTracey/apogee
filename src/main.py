@@ -16,10 +16,10 @@ OUTPUT_PATH = f"{OUTPUT_DIR}/ACTUAL_SUBSCALE_2_data_{now}.csv"
 
 HEADERS = [
     "Time",
-#    "State",
+    "State",
 #    "Temperature BMP",
     "Pressure",
-#    "Altitude",
+    "Altitude",
     "Acceleration X",
     "Acceleration Y",
     "Acceleration Z",
@@ -69,8 +69,9 @@ while True:
         except Exception as e:
             pressure = "FAIL"
             print(e)
-#        altitude = sensors.ALTIMETER.altitude()
 
+        altitude = sensors.AlTIMETER.pressure()
+        state = state(altitude, acceleration_y)
         # Read BNO055 sensor.
         acceleration = sensors.IMU.acceleration()
         acceleration_x = acceleration[0]
@@ -104,10 +105,10 @@ while True:
         temperature_bno = sensors.IMU.temperature()
         writer.writerow([
             current,
-#            state,
+            state,
 #            temperature_bmp,
             pressure,
-#            altitude,
+            altitude,
             acceleration_x,
             acceleration_y,
             acceleration_z,
@@ -134,3 +135,10 @@ while True:
         ])
     except Exception as e:
         print(e)
+    if state == 'BURNOUT':
+        rotate_servo(20)
+        sleep(3)
+        rotate_servo(0)
+        break
+
+
