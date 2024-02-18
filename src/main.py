@@ -4,6 +4,7 @@ import csv
 from datetime import datetime
 import time
 
+from kalman import DataFilter
 import sensors
 from state import State
 
@@ -33,6 +34,9 @@ writer.writerow(HEADERS)
 
 # Make the data filter.
 data_filter = DataFilter()
+for _ in range(100):
+    data_filter.filter_data(0, 0)
+    time.sleep(0.05)
 
 # Zero the altimeter.
 try:
@@ -48,28 +52,34 @@ while True:
         current = time.time() - start
 
          # Read BMP390 sensor.
-        altitude = sensors.AlTIMETER.altitude()
+        altitude = sensors.ALTIMETER.altitude()
         temperature = sensors.ALTIMETER.temperature()
 
         # Read BNO055 sensor.
-        acceleration = sensors.IMU.acceleration()
+        acceleration = sensors.IMU.linear_acceleration()
         acceleration_x = acceleration[0]
         acceleration_y = acceleration[1]
         acceleration_z = acceleration[2]
-        state = state_determination(altitude, acceleration_y)
+        euler_angle = sensors.IMU.euler()
+        euler_angle_0 = euler_angle[0]
+        euler_angle_1 = euler_angle[1]
+        euler_angle_2 = euler_angle[2]
 
         # Filter the data.
-        data_filter.filter_data(altitude, acceleration_y)
+        data_filter.filter_data(altitude, acceleration_z)
         altitude_filtered = data_filter.kalman_altitude
         acceleration_filtered = data_filter.kalman_acceleration
         velocity_filtered = data_filter.kalman_velocity
 
-        print(altitude_filtered)
+        # TODO: Update the state of the launch vehicle.
+        state = "NA"
 
+        print("acc",acceleration_filtered)
+        print("vel",velocity_filtered)
 
         # Log the data
         writer.writerow([
-            current
+            current,
             state,
             altitude_filtered,
             acceleration_filtered,

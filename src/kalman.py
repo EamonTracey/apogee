@@ -36,10 +36,7 @@ class DataFilter:
         self._t_prev = in_time
 
     def _generate_phi(self):
-        if self.spoof is not None:
-            self._calculate_dt(next(self.time_gen))
-        else:
-            self._calculate_dt(time.time())
+        self._calculate_dt(time.time())
 
         dp = 1
         ds = 0
