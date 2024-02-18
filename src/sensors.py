@@ -4,6 +4,8 @@ import adafruit_bmp3xx
 import adafruit_bno055
 import board
 
+from utilsi import celsius_to_fahrenheit, meters_to_feet
+
 I2C = board.I2C()
 
 def sensor_reading(func):
@@ -23,7 +25,7 @@ class _BMP390:
 
     @sensor_reading
     def temperature(self):
-        return self.altimeter.temperature
+        return fahrenheit_to_celsius(self.altimeter.temperature)
 
     @sensor_reading
     def pressure(self):
@@ -31,7 +33,7 @@ class _BMP390:
 
     @sensor_reading
     def altitude(self):
-        return self.altimeter.altitude
+        return meters_to_feet(self.altimeter.altitude)
 
     def zero(self, n=100, wait=0.01):
         pressure_sum = 0
@@ -51,19 +53,19 @@ class _BNO055:
 
     @sensor_reading
     def acceleration(self):
-        return self.imu.acceleration
+        return meters_to_feet(self.imu.acceleration)
 
     @sensor_reading
     def gravity(self):
-        return self.imu.gravity
+        return meters_to_feet(self.imu.gravity)
 
     @sensor_reading
     def gyro(self):
-        return self.imu.gyro
+        return meters_to_feet(self.imu.gyro)
         
     @sensor_reading
     def magnetic(self):
-        return self.imu.magnetic
+        return meters_to_feet(self.imu.magnetic)
 
     @sensor_reading
     def euler(self):
@@ -75,11 +77,11 @@ class _BNO055:
 
     @sensor_reading
     def linear_acceleration(self):
-        return self.imu.linear_acceleration
+        return meters_to_feet(self.imu.linear_acceleration)
 
     @sensor_reading
     def temperature(self):
-        return self.imu.temperature
+        return fahrenheit_to_celsius(self.imu.temperature)
 
 
 ALTIMETER = _BMP390()
