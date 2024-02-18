@@ -16,19 +16,20 @@ class State(Enum):
     OVERSHOOT = 3
     APOGEE = 4
 
-def feet(n):
+def meters_to_feet(n):
     return n * 3.28084
 
-def state(, acc, vel):
-    alt = feet(alt)
-    acc = feet(acc)
-    if acc < 200 and alt < 150:
+def state_determination(altitude, acceleration, velocity):
+    altitude = meters_to_feet(altitude)
+    acceleration = meters_to_feet(acceleration)
+    velocity = meters_to_feet(velocity)
+    if acceleration < 200 and altitude < 150:
         return State.GROUND
-    elif acc > 200 and alt > 150:
+    elif acceleration > 200 and altitude > 150:
         return State.LAUNCHED
-    elif acc < -20 and alt < 5200:
+    elif acceleration < -20 and altitude < 5200:
         return State.BURNOUT
-    #elif vel > 0 and alt > 5200:
+    #elif velocity > 0 and altitude > 5200:
         #return  State.OVERSHOOT
-    #elif vel < 0
+    #elif velocity < 0
         #return State.APOGEE
