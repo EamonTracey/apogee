@@ -7,6 +7,7 @@ import time
 from kalman import DataFilter
 import sensors
 from state import State
+from utils import LAUNCH_ALTITUDE, LAUNCH_ACCELERATION, BURNOUT_ACCELERATION, APOGEE_ALTITUDE
 
 # Initialize data logging constants.
 now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
@@ -46,6 +47,10 @@ except Exception as e:
 
 # Begin the control loop.
 start = time.time()
+burnt = None
+actuation_complete = False
+ap = None
+second_actuation_complete = False
 while True:
     try:
         # Read current time.
@@ -71,11 +76,53 @@ while True:
         acceleration_filtered = data_filter.kalman_acceleration
         velocity_filtered = data_filter.kalman_velocity
 
-        # TODO: Update the state of the launch vehicle.
-        state = "NA"
+        data_filter.filter_data(altitude, acceleration_y)
+        altitude_filtered = data_filter.altitude_kalman
+        acceleration_filtered = data_filter.acceleration_kalman
+        velocity_filtered = data_filter.velocity_kalman
 
-        print("acc",acceleration_filtered)
-        print("vel",velocity_filtered)
+        # Determine the state of the ACS.
+        # Ground -> Launched.
+        if (state == State.GROUND and
+            altitude_kalman > LAUNCH_ALTITUDE and
+            acceleration_kalman > LAUNCH_ACCELERATION):
+            state = State.LAUNCHED
+        # Launched -> Burnout.
+        elif (state == State.LAUNCHED and
+              altitude_kalman < APOGEE_ALTITUDE and
+              acceleration_kalman < BURNOUT_ACCELERATION):
+            state = State.BURNOUT
+        # Burnout -> Overshoot.
+        elif (state == State.BURNOUT and
+              altitude_kalman > APOGEE_ALTITUDE and
+              acceleration_kalman < BURNOUT_ACCELERATION):
+            state = State.OVERSHOOT
+        # Burnout -> Apogee.
+        elif (state == State.BURNOUT and
+              altitude_kalman < APOGEE_ALTITUDE and
+              velocity_kalman < APOGEE_VELOCITY):
+            state = State.APOGEE
+        # Overshoot -> Apogee.
+        elif (state == State.OVERSHOOT and
+              altitude_kalman > APOGEE_ALTITUDE and
+              velocity_kalman < APOGEE_VELOCITY):
+            state = State.APOGEE
+
+        # Actuate.
+        if state == State.BURNOUT and not actuation_complete:
+            if burnt is None:
+                burnt = time.time()
+                rotate_servo(30)
+            elif time.time() - burnt > 3:
+                rotate_servo(0)
+                actuation_complete = True
+        elif state == State.APOGEE and not second_actuation_complete:
+            if ap is None:
+                ap = time.time()
+                rotate_servo(30)
+            elif time.time() - ap > 3:
+                rotate_servo(0)
+                second_actuation_complete = True
 
         # Log the data
         writer.writerow([

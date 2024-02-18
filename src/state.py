@@ -5,6 +5,8 @@ state.py contains the implementation of State.
 from enum import Enum
 import math
 
+from utils import meters_to_feet
+
 class State(Enum):
     """
     The State class enumerates the launch vehicle's possible states.
@@ -15,9 +17,6 @@ class State(Enum):
     BURNOUT = 2
     OVERSHOOT = 3
     APOGEE = 4
-
-def meters_to_feet(n):
-    return n * 3.28084
 
 def state_determination(altitude, acceleration, velocity):
     altitude = meters_to_feet(altitude)
