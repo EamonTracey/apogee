@@ -1,3 +1,5 @@
+from time import sleep
+
 import board
 import pwmio
 
@@ -32,3 +34,19 @@ class ServoMotor:
 
 
 SERVO = ServoMotor(board.D12)
+while 1:
+    n = input("Enter percentage to turn servo: ")
+    if (n == "q"):
+        SERVO.rotate(0)
+        print(f"Rotating servo to {n}% = ({n / 100 * 180} degrees)")
+        sleep(1)
+        break
+    n = int(n)
+    print("Zeroing servo...")
+    SERVO.rotate(0)
+    sleep(2)
+    print(f"Rotating servo to {n}% = ({n / 100 * 180} degrees)")
+    SERVO.rotate(n)
+    sleep(2)
+# print("Zeroing servo...")
+# SERVO.rotate(0)

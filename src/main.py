@@ -4,10 +4,12 @@ import csv
 from datetime import datetime
 import time
 
+from piezo_buzzer import BUZZER
 from kalman import DataFilter
-import sensors
+from sensors import ALTIMETER, IMU
+from servo_motor import SERVO
 from state import State
-from utils import LAUNCH_ALTITUDE, LAUNCH_ACCELERATION, BURNOUT_ACCELERATION, APOGEE_ALTITUDE
+from constants import LAUNCH_ALTITUDE, LAUNCH_ACCELERATION, BURNOUT_ACCELERATION, APOGEE_ALTITUDE
 
 # Initialize data logging constants.
 now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
@@ -41,45 +43,52 @@ for _ in range(100):
 
 # Zero the altimeter.
 try:
-    sensors.ALTIMETER.zero()
+    ALTIMETER.zero()
 except Exception as e:
     print(f"{e}: failed to zero BMP390.")
 
 # Begin the control loop.
+state = State.GROUND
 start = time.time()
 burnt = None
 actuation_complete = False
 ap = None
 second_actuation_complete = False
+SERVO.rotate(0)
+time.sleep(2)
+SERVO.rotate(30)
+time.sleep(2)
+SERVO.rotate(0)
+print("starting loop!")
 while True:
     try:
         # Read current time.
         current = time.time() - start
 
          # Read BMP390 sensor.
-        altitude = sensors.ALTIMETER.altitude()
-        temperature = sensors.ALTIMETER.temperature()
+        altitude = ALTIMETER.altitude()
+        temperature = ALTIMETER.temperature()
 
         # Read BNO055 sensor.
-        acceleration = sensors.IMU.linear_acceleration()
+        acceleration = IMU.linear_acceleration()
         acceleration_x = acceleration[0]
         acceleration_y = acceleration[1]
         acceleration_z = acceleration[2]
-        euler_angle = sensors.IMU.euler()
+        euler_angle = IMU.euler()
         euler_angle_0 = euler_angle[0]
         euler_angle_1 = euler_angle[1]
         euler_angle_2 = euler_angle[2]
 
         # Filter the data.
         data_filter.filter_data(altitude, acceleration_z)
-        altitude_filtered = data_filter.kalman_altitude
-        acceleration_filtered = data_filter.kalman_acceleration
-        velocity_filtered = data_filter.kalman_velocity
+        altitude_kalman = data_filter.kalman_altitude
+        acceleration_kalman = data_filter.kalman_acceleration
+        velocity_kalman = data_filter.kalman_velocity
 
         data_filter.filter_data(altitude, acceleration_y)
-        altitude_filtered = data_filter.altitude_kalman
-        acceleration_filtered = data_filter.acceleration_kalman
-        velocity_filtered = data_filter.velocity_kalman
+        altitude_kalman = data_filter.kalman_altitude
+        acceleration_kalman = data_filter.kalman_acceleration
+        velocity_kalman = data_filter.kalman_velocity
 
         # Determine the state of the ACS.
         # Ground -> Launched.
@@ -111,26 +120,28 @@ while True:
         # Actuate.
         if state == State.BURNOUT and not actuation_complete:
             if burnt is None:
+                print("actuating!!!")
                 burnt = time.time()
-                rotate_servo(30)
+                SERVO.rotate(30)
             elif time.time() - burnt > 3:
-                rotate_servo(0)
+                SERVO.rotate(0)
                 actuation_complete = True
         elif state == State.APOGEE and not second_actuation_complete:
             if ap is None:
+                print("actuating again!!!")
                 ap = time.time()
-                rotate_servo(30)
+                SERVO.rotate(30)
             elif time.time() - ap > 3:
-                rotate_servo(0)
+                SERVO.rotate(0)
                 second_actuation_complete = True
 
         # Log the data
         writer.writerow([
             current,
             state,
-            altitude_filtered,
-            acceleration_filtered,
-            velocity_filtered,
+            altitude_kalman,
+            acceleration_kalman,
+            velocity_kalman,
             altitude,
             acceleration_x,
             acceleration_y,

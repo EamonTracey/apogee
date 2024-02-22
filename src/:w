@@ -4,7 +4,7 @@ import adafruit_bmp3xx
 import adafruit_bno055
 import board
 
-from units import celsius_to_fahrenheit, meters_to_feet
+from imperial import celsius_to_fahrenheit, meters_to_feet
 
 I2C = board.I2C()
 
@@ -53,19 +53,19 @@ class _BNO055:
 
     @sensor_reading
     def acceleration(self):
-        return tuple(map(meters_to_feet, self.imu.acceleration))
+        return meters_to_feet(self.imu.acceleration)
 
     @sensor_reading
     def gravity(self):
-        return tuple(map(meters_to_feet, self.imu.gravity))
+        return meters_to_feet(self.imu.gravity)
 
     @sensor_reading
     def gyro(self):
-        return tuple(map(meters_to_feet, self.imu.gyro))
+        return meters_to_feet(self.imu.gyro)
         
     @sensor_reading
     def magnetic(self):
-        return tuple(map(meters_to_feet, self.imu.magnetic))
+        return meters_to_feet(self.imu.magnetic)
 
     @sensor_reading
     def euler(self):
@@ -77,7 +77,7 @@ class _BNO055:
 
     @sensor_reading
     def linear_acceleration(self):
-        return tuple(map(meters_to_feet, self.imu.linear_acceleration))
+        return tuple(map(meters_to_feet,self.imu.linear_acceleration))
 
     @sensor_reading
     def temperature(self):
