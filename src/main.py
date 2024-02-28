@@ -8,7 +8,7 @@ from piezo_buzzer import BUZZER
 from kalman import DataFilter
 from sensors import ALTIMETER, IMU
 from servo_motor import SERVO
-from state import State
+from state import State, determine_state
 from constants import LAUNCH_ALTITUDE, LAUNCH_ACCELERATION, BURNOUT_ACCELERATION, APOGEE_ALTITUDE
 
 # Initialize data logging constants.
@@ -81,41 +81,12 @@ while True:
 
         # Filter the data.
         data_filter.filter_data(altitude, acceleration_z)
-        altitude_kalman = data_filter.kalman_altitude
-        acceleration_kalman = data_filter.kalman_acceleration
-        velocity_kalman = data_filter.kalman_velocity
-
-        data_filter.filter_data(altitude, acceleration_y)
-        altitude_kalman = data_filter.kalman_altitude
-        acceleration_kalman = data_filter.kalman_acceleration
-        velocity_kalman = data_filter.kalman_velocity
+        altitude_filtered = data_filter.kalman_altitude
+        acceleration_filtered = data_filter.kalman_acceleration
+        velocity_filtered = data_filter.kalman_velocity
 
         # Determine the state of the ACS.
-        # Ground -> Launched.
-        if (state == State.GROUND and
-            altitude_kalman > LAUNCH_ALTITUDE and
-            acceleration_kalman > LAUNCH_ACCELERATION):
-            state = State.LAUNCHED
-        # Launched -> Burnout.
-        elif (state == State.LAUNCHED and
-              altitude_kalman < APOGEE_ALTITUDE and
-              acceleration_kalman < BURNOUT_ACCELERATION):
-            state = State.BURNOUT
-        # Burnout -> Overshoot.
-        elif (state == State.BURNOUT and
-              altitude_kalman > APOGEE_ALTITUDE and
-              acceleration_kalman < BURNOUT_ACCELERATION):
-            state = State.OVERSHOOT
-        # Burnout -> Apogee.
-        elif (state == State.BURNOUT and
-              altitude_kalman < APOGEE_ALTITUDE and
-              velocity_kalman < APOGEE_VELOCITY):
-            state = State.APOGEE
-        # Overshoot -> Apogee.
-        elif (state == State.OVERSHOOT and
-              altitude_kalman > APOGEE_ALTITUDE and
-              velocity_kalman < APOGEE_VELOCITY):
-            state = State.APOGEE
+        state = determine_state(altitude_filtered, acceleration_filtered, velocity_filtered)
 
         # Actuate.
         if state == State.BURNOUT and not actuation_complete:
@@ -139,9 +110,9 @@ while True:
         writer.writerow([
             current,
             state,
-            altitude_kalman,
-            acceleration_kalman,
-            velocity_kalman,
+            altitude_filtered,
+            acceleration_filtered,
+            velocity_filtered,
             altitude,
             acceleration_x,
             acceleration_y,

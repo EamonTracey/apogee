@@ -49,15 +49,13 @@ class _BMP390:
 class _BNO055:
     def __init__(self) -> None:
         self.imu = adafruit_bno055.BNO055_I2C(I2C)
+        self.imu.mode = adafruit_bno055.CONFIG_MODE
         self.imu.accel_range = adafruit_bno055.ACCEL_16G
+        self.imu.mode = adafruit_bno055.NDOF_MODE
 
     @sensor_reading
     def acceleration(self):
         return tuple(map(meters_to_feet, self.imu.acceleration))
-
-    @sensor_reading
-    def gravity(self):
-        return tuple(map(meters_to_feet, self.imu.gravity))
 
     @sensor_reading
     def gyro(self):
@@ -70,18 +68,6 @@ class _BNO055:
     @sensor_reading
     def euler(self):
         return self.imu.euler
-
-    @sensor_reading
-    def quaternion(self):
-        return self.imu.quaternion
-
-    @sensor_reading
-    def linear_acceleration(self):
-        return tuple(map(meters_to_feet, self.imu.linear_acceleration))
-
-    @sensor_reading
-    def temperature(self):
-        return celsius_to_fahrenheit(self.imu.temperature)
 
 
 ALTIMETER = _BMP390()
