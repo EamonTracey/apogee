@@ -9,27 +9,11 @@ from kalman import DataFilter
 from sensors import ALTIMETER, IMU
 from servo_motor import SERVO
 from state import State, determine_state
-from constants import LAUNCH_ALTITUDE, LAUNCH_ACCELERATION, BURNOUT_ACCELERATION, APOGEE_ALTITUDE
+from constants import HEADERS, OUTPUT_DIR
 
 # Initialize data logging constants.
 now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
-OUTPUT_DIR = "/home/acs/data/fullscale"
 OUTPUT_PATH = f"{OUTPUT_DIR}/fullscale_data_{now}.csv"
-HEADERS = [
-    "Time",
-    "State",
-    "Altitude Filtered",
-    "Acceleration Filtered",
-    "Velocity Filtered",
-    "Altitude",
-    "Acceleration X",
-    "Acceleration Y",
-    "Acceleration Z",
-    "Euler Angle 0",
-    "Euler Angle 1",
-    "Euler Angle 2",
-    "Temperature"
-]
 
 # Create csv writer (logger).
 writer = csv.writer(open(OUTPUT_PATH, "w"))
