@@ -4,12 +4,13 @@ import csv
 from datetime import datetime
 import time
 
+from actuation_controller import ActuationController
+from constants import HEADERS, OUTPUT_DIR
 from piezo_buzzer import BUZZER
 from kalman import DataFilter
 from sensors import ALTIMETER, IMU
 from servo_motor import SERVO
 from state import State, determine_state
-from constants import HEADERS, OUTPUT_DIR
 
 # Initialize data logging constants.
 now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
@@ -31,19 +32,7 @@ try:
 except Exception as e:
     print(f"{e}: failed to zero BMP390.")
 
-# Begin the control loop.
-state = State.GROUND
-start = time.time()
-burnt = None
-actuation_complete = False
-ap = None
-second_actuation_complete = False
-SERVO.rotate(0)
-time.sleep(2)
-SERVO.rotate(30)
-time.sleep(2)
-SERVO.rotate(0)
-print("starting loop!")
+actuator = ActuationController(SERVO)
 while True:
     try:
         # Read current time.
@@ -54,7 +43,7 @@ while True:
         temperature = ALTIMETER.temperature()
 
         # Read BNO055 sensor.
-        acceleration = IMU.linear_acceleration()
+        acceleration = IMU.acceleration()
         acceleration_x = acceleration[0]
         acceleration_y = acceleration[1]
         acceleration_z = acceleration[2]
@@ -72,23 +61,8 @@ while True:
         # Determine the state of the ACS.
         state = determine_state(altitude_filtered, acceleration_filtered, velocity_filtered)
 
-        # Actuate.
-        if state == State.BURNOUT and not actuation_complete:
-            if burnt is None:
-                print("actuating!!!")
-                burnt = time.time()
-                SERVO.rotate(30)
-            elif time.time() - burnt > 3:
-                SERVO.rotate(0)
-                actuation_complete = True
-        elif state == State.APOGEE and not second_actuation_complete:
-            if ap is None:
-                print("actuating again!!!")
-                ap = time.time()
-                SERVO.rotate(30)
-            elif time.time() - ap > 3:
-                SERVO.rotate(0)
-                second_actuation_complete = True
+        # Run actuation control algorithm.
+        actuator.actuate(state, altitude_filtered, acceleration_filtered, velocity_filtered)
 
         # Log the data
         writer.writerow([

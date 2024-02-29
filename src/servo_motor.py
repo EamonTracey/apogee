@@ -10,6 +10,7 @@ class ServoMotor:
     def __init__(self, pin, **kwargs):
         self.motor = pwmio.PWMOut(pin, variable_frequency=False, **kwargs)
         self.motor.frequency = 330
+        self.percentage = 0
 
     def rotate(self, n):
         """
@@ -29,6 +30,6 @@ class ServoMotor:
         delta = ServoMotor.MOTOR_MAX - ServoMotor.MOTOR_MIN
         duty = ServoMotor.MOTOR_MIN + delta * n / 100
         self.motor.duty_cycle = duty * ServoMotor.ON
-
+        self.percentage = n
 
 SERVO = ServoMotor(board.D12)
