@@ -44,7 +44,7 @@ class ActuationController:
         if state == State.GROUND or state == State.LAUNCHED:
             return
         if state == State.OVERSHOOT:
-            SERVO.rotate(35)
+            SERVO.rotate(40)
             return
         if state == State.APOGEE:
             SERVO.rotate(0)
