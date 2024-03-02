@@ -52,6 +52,7 @@ class ActuationController:
     def predict_apogee(self, altitude, acceleration, velocity, drag):
         radicand = VEHICLE_MASS * G / drag
         if radicand < 0:
+            logging.warning(f"radicand was 0 {radicand}")
             return 5800
         velocity_terminal = velocity * math.sqrt(radicand)
 
