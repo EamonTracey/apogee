@@ -7,6 +7,7 @@ LAUNCH_ACCELERATION = 200 # feet / second^2
 BURNOUT_ACCELERATION = 8  # feet / second^2
 BURNOUT_ALTITUDE = 1000   # feet
 APOGEE_ALTITUDE = 5200    # altitude
+APOGEE_VELOCITY = 0
 
 # Launch vehicle constants.
 VEHICLE_MASS = 1.1902231  # slugs

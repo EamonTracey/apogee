@@ -26,7 +26,7 @@ def determine_state(state, altitude, acceleration, velocity):
         elif (state == State.LAUNCHED and altitude < APOGEE_ALTITUDE and acceleration < BURNOUT_ACCELERATION) or altitude > BURNOUT_ALTITUDE:
             return State.BURNOUT
         # Burnout -> Overshoot.
-        elif (state == State.BURNOUT and altitude > APOGEE_ALTITUDE and acceleration < BURNOUT_ACCELERATION):
+        elif (state == State.BURNOUT and altitude > APOGEE_ALTITUDE):
             return State.OVERSHOOT
         # Burnout -> Apogee.
         elif (state == State.BURNOUT and altitude < APOGEE_ALTITUDE and velocity < APOGEE_VELOCITY):

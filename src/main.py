@@ -48,7 +48,7 @@ logging.debug("Initializing the actuator.")
 actuator = ActuationController(SERVO)
 logging.debug("The actuator is initialized.")
 start = time.time()
-state = State.BURNOUT
+state = State.GROUND
 logging.debug("Beginning the ACS control loop.")
 while True:
     try:
