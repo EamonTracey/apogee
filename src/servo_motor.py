@@ -23,11 +23,14 @@ class ServoMotor:
         The servo motor 
         """
         if type(n) is not int:
-            exit("SERVO ERROR: must pass an integer.")
+            logging.warning("SERVO ERROR: must pass an integer.")
+            return
         if n < 0 or n > 100:
-            exit(f"SERVO ERROR: the percentage value ({n}) must be in [0, 100]")
+            logging.warning(f"SERVO ERROR: the percentage value ({n}) must be in [0, 100]")
+            return
         if n < 0 or n > 40:
-            exit(f"SERVO ERROR: unsafe actuation percentage ({n}), stay in [0, 40]")
+            logging.warning(f"SERVO ERROR: unsafe actuation percentage ({n}), stay in [0, 40]")
+            return
 
         logging.debug(f"Actuating servo motor to {n}% = {n * 1/8} degrees.")
         delta = ServoMotor.MOTOR_MAX - ServoMotor.MOTOR_MIN
