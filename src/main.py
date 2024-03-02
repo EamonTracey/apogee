@@ -48,7 +48,7 @@ logging.debug("Initializing the actuator.")
 actuator = ActuationController(SERVO)
 logging.debug("The actuator is initialized.")
 start = time.time()
-state = State.GROUND
+state = State.BURNOUT
 logging.debug("Beginning the ACS control loop.")
 while True:
     try:
@@ -102,7 +102,6 @@ while True:
             logging.exception(f"Error within state determination: {e}.")
             logging.info(f"Determinator last state: {state}.")
             continue
-
 
         # Log the data
         writer.writerow([
