@@ -93,22 +93,22 @@ class ActuationController:
         apogee_error = apogee_prediction - 5200
 
         # Calculate the time delta.
-        dt = time_ - time_previous
+        dt = time_ - self.time_previous
 
         # Calculate the PI terms.
         proportional = apogee_error
-        integral = integral_previous + ((apogee_error + error_previous) * dt / 2)
+        integral = self.integral_previous + ((apogee_error + self.error_previous) * dt / 2)
 
         Kp = 12.5
         Ki = 1
         Kg = 0.01
 
         # Perform PI control!
-        pi = dt * (Kp * proportional + Ki * integral) * Kg + pi_previous
+        pi = dt * (Kp * proportional + Ki * integral) * Kg + self.pi_previous
         self.servo.rotate(pi)
 
         # Store relevant previous values.
-        error_previous = apogee_error
-        time_previous = time_
-        integral_previous = integral
-        pi_previous = pi
+        self.error_previous = apogee_error
+        self.time_previous = time_
+        self.integral_previous = integral
+        self.pi_previous = pi
