@@ -5,11 +5,10 @@ APOGEE_ALTITUDE = 5200    # altitude
 
 VEHICLE_MASS = 17.37      # kilograms
 
-OUTPUT_DIRECTORY = "/home/acs/data/fullscale"
+OUTPUT_DIR = "/home/acs/data/fullscale"
 HEADERS = [
     "Time",
     "State",
-    "Servo Percentage",
     "Altitude Filtered",
     "Acceleration Filtered",
     "Velocity Filtered",
