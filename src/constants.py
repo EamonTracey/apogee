@@ -5,7 +5,7 @@ G = 32.17405              # feet / second^2
 LAUNCH_ALTITUDE = 150     # feet
 LAUNCH_ACCELERATION = 200 # feet / second^2
 BURNOUT_ACCELERATION = 8  # feet / second^2
-BURNOUT_ALTITUDE = 900    # feet
+BURNOUT_ALTITUDE = 1000   # feet
 APOGEE_ALTITUDE = 5200    # altitude
 
 # Launch vehicle constants.
@@ -16,6 +16,7 @@ HEADERS = [
     "Time",
     "State",
     "Servo Percentage",
+    "Apogee Prediction",
     "Altitude Filtered",
     "Acceleration Filtered",
     "Velocity Filtered",

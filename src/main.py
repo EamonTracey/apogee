@@ -109,6 +109,7 @@ while True:
             current,
             state,
             SERVO.percentage,
+            actuator.apogee_prediction,
             altitude_filtered,
             acceleration_filtered,
             velocity_filtered,

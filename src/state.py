@@ -20,10 +20,10 @@ class State(Enum):
 
 def determine_state(state, altitude, acceleration, velocity):
         # Ground -> Launched.
-        if (state == State.GROUND and altitude > LAUNCH_ALTITUDE and acceleration > LAUNCH_ACCELERATION):
+        if (state == State.GROUND and altitude > LAUNCH_ALTITUDE and acceleration > LAUNCH_ACCELERATION) or altitude > 200:
             return State.LAUNCHED
         # Launched -> Burnout.
-        elif (state == State.LAUNCHED and altitude < APOGEE_ALTITUDE and acceleration < BURNOUT_ACCELERATION):
+        elif (state == State.LAUNCHED and altitude < APOGEE_ALTITUDE and acceleration < BURNOUT_ACCELERATION) or altitude > BURNOUT_ALTITUDE:
             return State.BURNOUT
         # Burnout -> Overshoot.
         elif (state == State.BURNOUT and altitude > APOGEE_ALTITUDE and acceleration < BURNOUT_ACCELERATION):

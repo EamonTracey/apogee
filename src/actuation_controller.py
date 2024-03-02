@@ -73,6 +73,7 @@ class ActuationController:
         if self._first:
             drag = self.calculate_drag(velocity)
             apogee_prediction = self.predict_apogee(altitude, acceleration, velocity, drag)
+            self.apogee_prediction = apogee_prediction
 
             self.error_previous = apogee_prediction - 5200
             self.time_previous = time_
@@ -97,8 +98,8 @@ class ActuationController:
         proportional = apogee_error
         integral = integral_previous + ((apogee_error + error_previous) * dt / 2)
 
-        Kp = 7.5
-        Ki = 0.5
+        Kp = 12.5
+        Ki = 1
         Kg = 0.01
 
         # Perform PI control!
