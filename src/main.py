@@ -14,8 +14,7 @@ from state import State, determine_state
 
 # Initialize data logging constants.
 now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
-#OUTPUT_PATH = f"{OUTPUT_DIR}/fullscale_data_{now}.csv"
-OUTPUT_PATH = f"test_data_{now}.csv"
+OUTPUT_PATH = f"{OUTPUT_DIRECTORY}/fullscale_data_{now}.csv"
 
 # Create csv writer (logger).
 writer = csv.writer(open(OUTPUT_PATH, "w+"))
@@ -33,13 +32,9 @@ try:
 except Exception as e:
     print(f"{e}: failed to zero BMP390.")
 
-#actuator = ActuationController(SERVO)
-print("starting...")
-c=0
+actuator = ActuationController(SERVO)
 start = time.time()
 while True:
-    c+=1
-    print(c)
     try:
         # Read current time.
         current = time.time() - start
@@ -65,15 +60,13 @@ while True:
         velocity_filtered = data_filter.kalman_velocity
 
         # Determine the state of the ACS.
-#        state = determine_state(altitude_filtered, acceleration_filtered, velocity_filtered)
-
-        # Run actuation control algorithm.
-#        actuator.actuate(state, altitude_filtered, acceleration_filtered, velocity_filtered)
+        state = determine_state(altitude_filtered, acceleration_filtered, velocity_filtered)
 
         # Log the data
         writer.writerow([
             current,
-            "ground",#state,
+            state,
+            SERVO.percentage,
             altitude_filtered,
             acceleration_filtered,
             velocity_filtered,
@@ -86,5 +79,8 @@ while True:
             euler_angle_2,
             temperature
         ])
+
+        # Run actuation control algorithm.
+#        actuator.actuate(state, altitude_filtered, acceleration_filtered, velocity_filtered)
     except Exception as e:
         print(e)

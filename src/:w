@@ -9,7 +9,6 @@ class ActuationController:
         self.error_previous = 0
         self.time_previous = 0
         self.integral_previous = 0
-        self.pid_previous = 0
 
         # Track the first time the actuate method is called during burnout.
         self._first = True
@@ -62,7 +61,6 @@ class ActuationController:
             self.error_previous = apogee_prediction - 5200
             self.time_previous = time_
             self.integral_previous = 0
-            self.pid_previous = 0
 
             self._first = False
             return
@@ -74,26 +72,18 @@ class ActuationController:
 
         # Calculate error and store timestep.
         apogee_error = apogee_prediction - 5200
+        if len(self.errors) < 2:
+            self.us.append(drag)
+            return
 
-        # Calculate the time delta.
         dt = time_ - time_previous
-
-        # Calculate the PID terms.
         proportional = apogee_prediction
-        integral = integral_previous + ((apogee_error + error_previous) * dt / 2)
-        derivative = (apogee_error - error_previous) / dt
+        integral = integrals[-1] + ((errors[-1] + errors[-2]) * dt / 2) ; self.integrals.append(integral)
+        derivative = (self.errors[-1] - self.errors[-2]) / dt
 
         Kp = 3
         Ki = 2
         Kd = 0.001
         Kg = 1
 
-        # Perform PID control!
-        pid = dt * (Kp * proportional + Ki * integral + Kd * derivative) * Kg + pid_previous
-        # SERVO.rotate(0)
-
-        # Store relevant previous values.
-        error_previous = apogee_error
-        time_previous = time_
-        integral_previous = integral
-        pid_previous = pid
+        u = dt * (Kp * proportional + Ki * integral + Kd * derivative) * Kg + self.us[-1] ; self.us.append(u)
