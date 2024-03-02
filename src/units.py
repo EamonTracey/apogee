@@ -10,3 +10,6 @@ def meters_to_feet(n):
 
 def celsius_to_fahrenheit(n):
     return n * 1.8 + 32
+
+def newtons_to_pounds(n):
+    return n * 0.224809

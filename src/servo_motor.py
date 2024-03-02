@@ -1,3 +1,5 @@
+import logging
+
 import board
 import pwmio
 
@@ -27,9 +29,11 @@ class ServoMotor:
         if n < 0 or n > 40:
             exit(f"SERVO ERROR: unsafe actuation percentage ({n}), stay in [0, 40]")
 
+        logging.debug(f"Actuating servo motor to {n}% = {n * 1/8} degrees.")
         delta = ServoMotor.MOTOR_MAX - ServoMotor.MOTOR_MIN
         duty = ServoMotor.MOTOR_MIN + delta * n / 100
         self.motor.duty_cycle = duty * ServoMotor.ON
         self.percentage = n
+        logging.debug("Servo motor actuation complete.")
 
 SERVO = ServoMotor(board.D12)

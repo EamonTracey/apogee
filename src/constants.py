@@ -1,9 +1,15 @@
+# Physical constants.
+G = 32.17405              # feet / second^2
+
+# State determination constants.
 LAUNCH_ALTITUDE = 150     # feet
 LAUNCH_ACCELERATION = 200 # feet / second^2
 BURNOUT_ACCELERATION = 8  # feet / second^2
+BURNOUT_ALTITUDE = 900    # feet
 APOGEE_ALTITUDE = 5200    # altitude
 
-VEHICLE_MASS = 17.37      # kilograms
+# Launch vehicle constants.
+VEHICLE_MASS = 1.1902231  # slugs
 
 OUTPUT_DIRECTORY = "/home/acs/data/fullscale"
 HEADERS = [
