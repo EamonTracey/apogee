@@ -1,3 +1,4 @@
+from constants import G, VEHICLE_MASS
 import math
 import time
 
@@ -14,11 +15,11 @@ class ActuationController:
         # Track the first time the actuate method is called during burnout.
         self._first = True
 
-        SERVO.rotate(0)
+        self.servo.rotate(0)
         time.sleep(2)
-        SERVO.rotate(30)
+        self.servo.rotate(30)
         time.sleep(2)
-        SERVO.rotate(0)
+        self.servo.rotate(0)
 
     def calculate_drag(self, velocity):
         # Assume flap angle equals servo actuation percentage.
@@ -30,6 +31,7 @@ class ActuationController:
         mach_number = velocity / 1125 
 
         # This equation is based on interpolated CFD results.
+        # Output is newtons.
         return (
             -20.74
             + 4.351 * flap_angle
@@ -42,17 +44,25 @@ class ActuationController:
             + 117.8 * mach_number ** 3
         )
         
-    def predict_apogee(altitude, acceleration, velocity, drag):
-        ...
+    def predict_apogee(self, altitude, acceleration, velocity, drag):
+        radicand = VEHICLE_MASS * G / drag
+        if radicand < 0:
+            return None
+        velocity_terminal = velocity * math.sqrt(radicand)
+
+        apogee_delta = velocity_terminal ** 2 * math.log(1 + velocity ** 2 / velocity_terminal ** 2) / (2 * G)
+        apogee_prediction = altitude + apogee_delta
+
+        return apogee_prediction
 
     def actuate(self, state, altitude, acceleration, velocity, time_):
         if state == State.GROUND or state == State.LAUNCHED:
             return
         if state == State.OVERSHOOT:
-            SERVO.rotate(40)
+            self.servo.rotate(40)
             return
         if state == State.APOGEE:
-            SERVO.rotate(0)
+            self.servo.rotate(0)
             return
 
         if self._first:
@@ -90,7 +100,7 @@ class ActuationController:
 
         # Perform PID control!
         pid = dt * (Kp * proportional + Ki * integral + Kd * derivative) * Kg + pid_previous
-        # SERVO.rotate(0)
+        # self.servo.rotate(0)
 
         # Store relevant previous values.
         error_previous = apogee_error
