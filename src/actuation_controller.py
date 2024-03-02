@@ -53,7 +53,7 @@ class ActuationController:
         radicand = VEHICLE_MASS * G / drag
         if radicand < 0:
             logging.warning(f"radicand was 0 {radicand}")
-            return 5800
+            return 5769
         velocity_terminal = velocity * math.sqrt(radicand)
 
         apogee_delta = velocity_terminal ** 2 * math.log(1 + velocity ** 2 / velocity_terminal ** 2) / (2 * G)
