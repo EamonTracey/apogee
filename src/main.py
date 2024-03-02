@@ -91,7 +91,7 @@ while True:
             logging.exception(f"Error filtering the data: {e}.")
             logging.info(f"Filter last altitude: {altitude_filtered}.")
             logging.info(f"Filter last acceleration: {acceleration_filtered}.")
-            logging.info(f"Filter last velocity: {acceleration_velocity}.")
+            logging.info(f"Filter last velocity: {velocity_filtered}.")
             continue
 
 
