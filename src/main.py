@@ -96,7 +96,13 @@ while True:
 
 
         # Determine the state of the ACS.
-        state = determine_state(state, altitude_filtered, acceleration_filtered, velocity_filtered)
+        try:
+            state = determine_state(state, altitude_filtered, acceleration_filtered, velocity_filtered)
+        except Exception as e:
+            logging.exception(f"Error within state determination: {e}.")
+            logging.info(f"Determinator last state: {state}.")
+            continue
+
 
         # Log the data
         writer.writerow([
@@ -117,6 +123,9 @@ while True:
         ])
 
         # Run actuation control algorithm.
-#        actuator.actuate(state, altitude_filtered, acceleration_filtered, velocity_filtered)
+        try:
+            actuator.actuate(state, altitude_filtered, acceleration_filtered, velocity_filtered, current)
+        except Exception as e:
+            logging.exception(f"Error within actuation control: {e}.")
     except BaseException as e:
         logging.error(f"BaseException caught (this is bad): {e}")

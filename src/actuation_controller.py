@@ -2,6 +2,8 @@ from constants import G, VEHICLE_MASS
 import math
 import time
 
+from state import State
+
 # Assume servo actuation percentage = flap angle.
 class ActuationController:
     def __init__(self, servo):
@@ -10,10 +12,13 @@ class ActuationController:
         self.error_previous = 0
         self.time_previous = 0
         self.integral_previous = 0
-        self.pid_previous = 0
+        self.pi_previous = 0
 
         # Track the first time the actuate method is called during burnout.
         self._first = True
+
+        # We want to log this.
+        self.apogee_prediction = 5800
 
         self.servo.rotate(0)
         time.sleep(2)
@@ -47,7 +52,7 @@ class ActuationController:
     def predict_apogee(self, altitude, acceleration, velocity, drag):
         radicand = VEHICLE_MASS * G / drag
         if radicand < 0:
-            return None
+            return 5800
         velocity_terminal = velocity * math.sqrt(radicand)
 
         apogee_delta = velocity_terminal ** 2 * math.log(1 + velocity ** 2 / velocity_terminal ** 2) / (2 * G)
@@ -72,7 +77,7 @@ class ActuationController:
             self.error_previous = apogee_prediction - 5200
             self.time_previous = time_
             self.integral_previous = 0
-            self.pid_previous = 0
+            self.pi_previous = 0
 
             self._first = False
             return
@@ -80,7 +85,7 @@ class ActuationController:
         # Predict apogee.
         drag = self.calculate_drag(velocity)
         apogee_prediction = self.predict_apogee(altitude, acceleration, velocity, drag)
-        apogee_error = apogee_prediction - 5200
+        self.apogee_prediction = apogee_prediction
 
         # Calculate error and store timestep.
         apogee_error = apogee_prediction - 5200
@@ -88,22 +93,20 @@ class ActuationController:
         # Calculate the time delta.
         dt = time_ - time_previous
 
-        # Calculate the PID terms.
-        proportional = apogee_prediction
+        # Calculate the PI terms.
+        proportional = apogee_error
         integral = integral_previous + ((apogee_error + error_previous) * dt / 2)
-        derivative = (apogee_error - error_previous) / dt
 
-        Kp = 3
-        Ki = 2
-        Kd = 0.001
-        Kg = 1
+        Kp = 7.5
+        Ki = 0.5
+        Kg = 0.01
 
-        # Perform PID control!
-        pid = dt * (Kp * proportional + Ki * integral + Kd * derivative) * Kg + pid_previous
-        # self.servo.rotate(0)
+        # Perform PI control!
+        pi = dt * (Kp * proportional + Ki * integral) * Kg + pi_previous
+        self.servo.rotate(pi)
 
         # Store relevant previous values.
         error_previous = apogee_error
         time_previous = time_
         integral_previous = integral
-        pid_previous = pid
+        pi_previous = pi
