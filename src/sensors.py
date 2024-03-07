@@ -49,9 +49,15 @@ class _BMP390:
 class _BNO055:
     def __init__(self) -> None:
         self.imu = adafruit_bno055.BNO055_I2C(I2C)
+
+        # Configure the BNO055 to operate in 16g mode.
+        # Unfortunately, a typo in the datasheet implied that
+        # 16g mode is compatible with fusion (orientation) modes;
+        # however, that is not true. We prioritize correct
+        # acceleration values over Euler angles.
         self.imu.mode = adafruit_bno055.CONFIG_MODE
         self.imu.accel_range = adafruit_bno055.ACCEL_16G
-        self.imu.mode = adafruit_bno055.NDOF_MODE
+        self.imu.mode = adafruit_bno055.AMG_MODE
 
     @sensor_reading
     def acceleration(self):
