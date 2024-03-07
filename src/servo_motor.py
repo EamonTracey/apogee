@@ -22,17 +22,17 @@ class ServoMotor:
             n = 100 -> 100% = 180 degrees
         The servo motor 
         """
-        if type(n) is not int:
-            logging.warning("SERVO ERROR: must pass an integer.")
+        if type(n) is not int and type(n) is not float:
+            logging.warning(f"SERVO ERROR: must pass a number, not {n} of type {type(n)}.")
             return
         if n < 0 or n > 100:
-            logging.warning(f"SERVO ERROR: the percentage value ({n}) must be in [0, 100]")
+            logging.warning(f"SERVO ERROR: the percentage value ({n}) must be in [0, 100].")
             return
         if n < 0 or n > 40:
-            logging.warning(f"SERVO ERROR: unsafe actuation percentage ({n}), stay in [0, 40]")
+            logging.warning(f"SERVO ERROR: unsafe actuation percentage ({n}), stay in [0, 40].")
             return
 
-        logging.debug(f"Actuating servo motor to {n}% = {n * 1/8} degrees.")
+        logging.debug(f"Actuating servo motor to {n}% = {n} degrees.")
         delta = ServoMotor.MOTOR_MAX - ServoMotor.MOTOR_MIN
         duty = ServoMotor.MOTOR_MIN + delta * n / 100
         self.motor.duty_cycle = duty * ServoMotor.ON
