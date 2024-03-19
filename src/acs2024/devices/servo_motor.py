@@ -20,7 +20,9 @@ class ServoMotor:
             n = 100 -> 100% = 180 degrees
         The servo motor 
         """
-        if type(n) is not int and type(n) is not float:
+        try:
+            n = float(n)
+        except ValueError:
             logging.warning(f"SERVO ERROR: must pass a number, not {n} of type {type(n)}.")
             return
         if n < 0 or n > 100:

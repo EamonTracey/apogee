@@ -2,6 +2,9 @@ from enum import Enum
 import math
 import time
 
+# Physical constants.
+G = 32.17405                        # feet / second^2
+
 # State determination constants.
 LAUNCH_ALTITUDE = 100               # feet
 LAUNCH_ACCELERATION = 200           # feet / second^2
@@ -28,7 +31,7 @@ class ActuationController:
         # We want to log this.
         self.apogee_prediction = 5800
 
-    def calculate_actuation(self, state, altitude, acceleration, velocity, time_):
+    def calculate_actuation(self, state, altitude, acceleration, velocity, time_, flap_angle):
         # Returns the value to pass to servo.rotate.
 
         if state == State.GROUND or state == State.LAUNCHED:
@@ -39,8 +42,8 @@ class ActuationController:
             return 0
 
         if self._first:
-            drag = self.calculate_drag(velocity)
-            apogee_prediction = self.predict_apogee(altitude, acceleration, velocity, drag)
+            drag = calculate_drag(flap_angle, velocity)
+            apogee_prediction = predict_apogee(altitude, acceleration, velocity, drag)
             self.apogee_prediction = apogee_prediction
 
             self.error_previous = apogee_prediction - 5200
@@ -52,8 +55,8 @@ class ActuationController:
             return None
 
         # Predict apogee.
-        drag = self.calculate_drag(velocity)
-        apogee_prediction = self.predict_apogee(altitude, acceleration, velocity, drag)
+        drag = calculate_drag(flap_angle, velocity)
+        apogee_prediction = predict_apogee(altitude, acceleration, velocity, drag)
         self.apogee_prediction = apogee_prediction
 
         # Calculate error and store timestep.
@@ -83,38 +86,35 @@ class ActuationController:
 
 def determine_state(state, altitude, acceleration, velocity):
         # Ground -> Launched.
-        if (
-            (state == State.GROUND) and
-            ((altitude > LAUNCH_ALTITUDE and acceleration > LAUNCH_ACCELERATION) or altitude > LAUNCH_ALTITUDE_CRITICAL)
-            ):
-            return State.LAUNCHED
+        if state == State.GROUND:
+            if (altitude > LAUNCH_ALTITUDE and acceleration > LAUNCH_ACCELERATION) or altitude > LAUNCH_ALTITUDE_CRITICAL:
+                return State.LAUNCHED
+            else:
+                return state
         # Launched -> Burnout.
-        elif (
-            (state == State.LAUNCHED) and
-            ((BURNOUT_ALTITUDE < altitude < APOGEE_ALTITUDE and acceleration < BURNOUT_ACCELERATION) or altitude > BURNOUT_ALTITUDE_CRITICAL)
-            ):
-            return State.BURNOUT
+        elif state == State.LAUNCHED:
+            if (BURNOUT_ALTITUDE < altitude < APOGEE_ALTITUDE and acceleration < BURNOUT_ACCELERATION) or altitude > BURNOUT_ALTITUDE_CRITICAL:
+                return State.BURNOUT
+            else:
+                return state
         # Burnout -> Overshoot.
-        elif (
-            (state == State.BURNOUT) and
-            (altitude > APOGEE_ALTITUDE)
-            ):
-            return State.OVERSHOOT
+        elif state == State.BURNOUT:
+            if altitude > APOGEE_ALTITUDE:
+                return State.OVERSHOOT
+            else:
+                return state
         # Burnout -> Apogee.
-        elif (
-            (state == State.BURNOUT) and
-            (velocity < APOGEE_VELOCITY and altitude < APOGEE_ALTITUDE)
-            ):
-            return State.APOGEE
+        elif state == State.BURNOUT:
+            if velocity < APOGEE_VELOCITY:
+                return State.APOGEE
+            else:
+                return state
         # Overshoot -> Apogee.
-        elif (
-            (state == State.OVERSHOOT) and
-            (velocity < APOGEE_VELOCITY and altitude > APOGEE_ALTITUDE)
-            ):
-            return State.APOGEE
-        # No state transition.
-        else:
-            return state
+        elif state == State.OVERSHOOT:
+            if velocity < APOGEE_VELOCITY:
+                return State.APOGEE
+            else:
+                return state
 
 
 class State(Enum):
@@ -129,14 +129,14 @@ class State(Enum):
     APOGEE = 4
 
 
-def calculate_drag(self, flap_angle, velocity):
+def calculate_drag(flap_angle, velocity):
     # This is a rough calculation of mach number given velocity.
     # Improvement: calculate based on temperature.
     mach_number = velocity / 1125 
 
     # This equation is based on interpolated CFD results.
-    # Output is newtons.
-    return (
+    # Output is pound-force.
+    return 0.224809 * (
         -20.74
         + 4.351 * flap_angle
         + 131.1 * mach_number
@@ -148,7 +148,7 @@ def calculate_drag(self, flap_angle, velocity):
         + 117.8 * mach_number ** 3
     )
 
-def predict_apogee(self, altitude, acceleration, velocity, drag):
+def predict_apogee(altitude, acceleration, velocity, drag):
     radicand = VEHICLE_MASS * G / drag
     if radicand < 0:
         return 5769

@@ -74,8 +74,8 @@ logging.debug(f"The altimeter is zeroed. Reading @ {ALTIMETER.altitude()} feet."
 logging.debug("Initializing the actuator.")
 actuator = ActuationController()
 logging.debug("The actuator is initialized.")
-start = time.time()
 state = State.GROUND
+start = time.time()
 logging.debug("Beginning the ACS control loop.")
 while True:
     try:
@@ -151,7 +151,7 @@ while True:
 
         # Run actuation control algorithm.
         try:
-            actuation_degree = actuator.calculate_actuation(state, altitude_filtered, acceleration_filtered, velocity_filtered, current)
+            actuation_degree = actuator.calculate_actuation(state, altitude_filtered, acceleration_filtered, velocity_filtered, current, SERVO.percentage)
             if actuation_degree is not None:
                 SERVO.rotate(actuation_degree)
         except Exception as e:
