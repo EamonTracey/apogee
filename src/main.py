@@ -6,11 +6,11 @@ from datetime import datetime
 import logging
 import time
 
-from lib.control import ActuationController, State, determine_state
-from lib.devices.piezo_buzzer import PiezoBuzzer
-from lib.devices.sensors import BMP390, BNO055
-from lib.devices.servo_motor import ServoMotor
-from lib.filter import DataFilter
+from acs2024.control import ActuationController, State, determine_state
+from acs2024.devices.piezo_buzzer import PiezoBuzzer
+from acs2024.devices.sensors import BMP390, BNO055
+from acs2024.devices.servo_motor import ServoMotor
+from acs2024.filter import DataFilter
 
 # Output data constants.
 OUTPUT_DIRECTORY = "/home/acs/data/fullscale"
@@ -37,6 +37,7 @@ now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
 OUTPUT_DATA_PATH = f"{OUTPUT_DIRECTORY}/fullscale_data_{now}.csv"
 OUTPUT_LOG_PATH = f"{OUTPUT_DIRECTORY}/fullscale_log_{now}.log"
 logging.basicConfig(filename=OUTPUT_LOG_PATH, level=logging.DEBUG, filemode="w")
+logging.getLogger().addHandler(logging.StreamHandler())
 
 logging.debug("Knock knock. Who's there? ACS. ACS who? ACS.")
 
@@ -71,7 +72,7 @@ except Exception as e:
 logging.debug(f"The altimeter is zeroed. Reading @ {ALTIMETER.altitude()} feet.")
 
 logging.debug("Initializing the actuator.")
-actuator = ActuationController(SERVO)
+actuator = ActuationController()
 logging.debug("The actuator is initialized.")
 start = time.time()
 state = State.GROUND
@@ -103,8 +104,8 @@ while True:
             euler_angle_2 = euler_angle[2]
         except Exception as e:
             logging.exception(f"Error reading the BNO055 inertial measurement unit: {e}.")
-            logging.info(f"BNO055 last acceleration: {acceleration}.")
-            logging.info(f"BNO055 last euler angle: {euler_angle}.")
+            logging.info(f"BNO055 last acceleration: ({acceleration_x}, {acceleration_y}, {acceleration_z}).")
+            logging.info(f"BNO055 last euler angle: ({euler_angle_0}, {euler_angle_1}, {euler_angle_2}).")
             continue
 
         # Filter the data.
@@ -150,8 +151,13 @@ while True:
 
         # Run actuation control algorithm.
         try:
-            actuator.actuate(state, altitude_filtered, acceleration_filtered, velocity_filtered, current)
+            actuation_degree = actuator.calculate_actuation(state, altitude_filtered, acceleration_filtered, velocity_filtered, current)
+            if actuation_degree is not None:
+                SERVO.rotate(actuation_degree)
         except Exception as e:
             logging.exception(f"Error within actuation control: {e}.")
+    except KeyboardInterrupt:
+        logging.warning("Keyboard interrupt detected; exiting gracefully.")
+        break
     except BaseException as e:
         logging.error(f"BaseException caught (this is bad): {e}")
