@@ -15,17 +15,6 @@ APOGEE_VELOCITY = 0                 # feet
 # Launch vehicle constants.
 VEHICLE_MASS = 1.1902231            # slugs
 
-class State(Enum):
-    """
-    The State class enumerates the launch vehicle's possible states.
-    """
-
-    GROUND = 0
-    LAUNCHED = 1
-    BURNOUT = 2
-    OVERSHOOT = 3
-    APOGEE = 4
-
 class ActuationController:
     def __init__(self):
         self.error_previous = 0
@@ -126,6 +115,18 @@ def determine_state(state, altitude, acceleration, velocity):
         # No state transition.
         else:
             return state
+
+
+class State(Enum):
+    """
+    The State class enumerates the launch vehicle's possible states.
+    """
+
+    GROUND = 0
+    LAUNCHED = 1
+    BURNOUT = 2
+    OVERSHOOT = 3
+    APOGEE = 4
 
 
 def calculate_drag(self, flap_angle, velocity):

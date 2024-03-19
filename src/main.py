@@ -1,17 +1,36 @@
 #!/usr/bin/python3
 
+import board
 import csv
 from datetime import datetime
 import logging
 import time
 
-from actuation_controller import ActuationController
-from constants import HEADERS, OUTPUT_DIRECTORY
-from piezo_buzzer import BUZZER
-from kalman import DataFilter
-from sensors import ALTIMETER, IMU
-from servo_motor import SERVO
-from state import State, determine_state
+from lib.control import ActuationController, State, determine_state
+from lib.devices.piezo_buzzer import PiezoBuzzer
+from lib.devices.sensors import BMP390, BNO055
+from lib.devices.servo_motor import ServoMotor
+from lib.filter import DataFilter
+
+# Output data constants.
+OUTPUT_DIRECTORY = "/home/acs/data/fullscale"
+HEADERS = [
+    "Time",
+    "State",
+    "Servo Percentage",
+    "Apogee Prediction",
+    "Altitude Filtered",
+    "Acceleration Filtered",
+    "Velocity Filtered",
+    "Altitude",
+    "Acceleration X",
+    "Acceleration Y",
+    "Acceleration Z",
+    "Euler Angle 0",
+    "Euler Angle 1",
+    "Euler Angle 2",
+    "Temperature"
+]
 
 # Initialize various logging parameters.
 now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
@@ -34,6 +53,13 @@ for _ in range(100):
     data_filter.filter_data(0, 0)
     time.sleep(0.05)
 logging.debug("The data filter is initialized.")
+
+# Create the devices.
+i2c = board.I2C()
+ALTIMETER = BMP390(i2c)
+IMU = BNO055(i2c)
+SERVO = ServoMotor(board.D12)
+BUZZER = PiezoBuzzer(board.D13)
 
 # Zero the altimeter.
 logging.debug("Zeroing the altimeter.")
