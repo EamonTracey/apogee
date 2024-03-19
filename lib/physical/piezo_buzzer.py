@@ -1,6 +1,5 @@
 import time
 
-import board
 import pwmio
 
 
@@ -13,6 +12,3 @@ class PiezoBuzzer:
         self.buzzer.duty_cycle = duty_cycle
         time.sleep(s)
         self.buzzer.duty_cycle = 0
-
-
-BUZZER = PiezoBuzzer(board.D13)

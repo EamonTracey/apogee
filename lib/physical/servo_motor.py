@@ -1,8 +1,6 @@
 import logging
 
-import board
 import pwmio
-
 
 class ServoMotor:
     ON = 2 ** 16
@@ -38,5 +36,3 @@ class ServoMotor:
         self.motor.duty_cycle = duty * ServoMotor.ON
         self.percentage = n
         logging.debug("Servo motor actuation complete.")
-
-SERVO = ServoMotor(board.D12)
