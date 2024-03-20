@@ -41,12 +41,12 @@ class BNO055:
     def acceleration(self):
         return tuple(map(meters_to_feet, self.imu.acceleration))
 
-    def gyro(self):
-        return tuple(map(meters_to_feet, self.imu.gyro))
-        
     def magnetic(self):
-        return tuple(map(meters_to_feet, self.imu.magnetic))
+        return tuple(self.imu.magnetic)
 
+    def gyro(self):
+        return tuple(self.imu.gyro)
+        
     def euler(self):
         return self.imu.euler
 

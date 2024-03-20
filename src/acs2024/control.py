@@ -136,7 +136,7 @@ def calculate_drag(flap_angle, velocity):
 
     # This equation is based on interpolated CFD results.
     # Output is pound-force.
-    return 0.224809 * (
+    drag = 0.224809 * (
         -20.74
         + 4.351 * flap_angle
         + 131.1 * mach_number
@@ -148,10 +148,13 @@ def calculate_drag(flap_angle, velocity):
         + 117.8 * mach_number ** 3
     )
 
+    return drag
+
 def predict_apogee(altitude, acceleration, velocity, drag):
+    if drag <= 0:
+        return altitude + (velocity ** 2) / (2 * G)
+
     radicand = VEHICLE_MASS * G / drag
-    if radicand < 0:
-        return 5769
     velocity_terminal = velocity * math.sqrt(radicand)
 
     apogee_delta = velocity_terminal ** 2 * math.log(1 + velocity ** 2 / velocity_terminal ** 2) / (2 * G)
