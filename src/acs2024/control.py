@@ -69,8 +69,8 @@ class ActuationController:
         proportional = apogee_error
         integral = self.integral_previous + ((apogee_error + self.error_previous) * dt / 2)
 
-        Kp = 12.5
-        Ki = 1
+        Kp = 50
+        Ki = 8
         Kg = 0.01
 
         # Perform PI control!
