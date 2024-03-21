@@ -76,6 +76,12 @@ class ActuationController:
         # Perform PI control!
         pi = dt * (Kp * proportional + Ki * integral) * Kg + self.pi_previous
 
+        # Contain the PI algorithm output within the bounds of actuation.
+        if pi <= 0:
+            pi = 0
+        elif pi >= 40:
+            pi = 40
+
         # Store relevant previous values.
         self.error_previous = apogee_error
         self.time_previous = time_

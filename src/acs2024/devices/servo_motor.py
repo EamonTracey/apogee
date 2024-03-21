@@ -37,4 +37,3 @@ class ServoMotor:
         duty = ServoMotor.MOTOR_MIN + delta * n / 100
         self.motor.duty_cycle = duty * ServoMotor.ON
         self.percentage = n
-        logging.debug("Servo motor actuation complete.")
