@@ -18,6 +18,9 @@ APOGEE_VELOCITY = 0                 # feet
 # Launch vehicle constants.
 VEHICLE_MASS = 1.2232296            # slugs
 
+# Luke constants.
+LUKE_APOGEE = 5653
+
 class ActuationController:
     def __init__(self):
         self.error_previous = 0
@@ -29,7 +32,7 @@ class ActuationController:
         self._first = True
 
         # We want to log this.
-        self.apogee_prediction = 5800
+        self.apogee_prediction = LUKE_APOGEE
 
     def calculate_actuation(self, state, altitude, acceleration, velocity, time_, flap_angle):
         # Returns the value to pass to servo.rotate.
@@ -46,7 +49,7 @@ class ActuationController:
             apogee_prediction = predict_apogee(altitude, acceleration, velocity, drag)
             self.apogee_prediction = apogee_prediction
 
-            self.error_previous = apogee_prediction - 5200
+            self.error_previous = apogee_prediction - APOGEE_ALTITUDE
             self.time_previous = time_
             self.integral_previous = 0
             self.pi_previous = 0
@@ -60,7 +63,7 @@ class ActuationController:
         self.apogee_prediction = apogee_prediction
 
         # Calculate error and store timestep.
-        apogee_error = apogee_prediction - 5200
+        apogee_error = apogee_prediction - APOGEE_ALTITUDE
 
         # Calculate the time delta.
         dt = time_ - self.time_previous

@@ -121,7 +121,7 @@ while True:
             acceleration = imu.acceleration()
             acceleration_x = acceleration[0]
             acceleration_y = acceleration[1]
-            acceleration_z = acceleration[2] - 31.0537
+            acceleration_z = acceleration[2] - 32.15
             magnetic = imu.magnetic()
             magnetic_x = magnetic[0]
             magnetic_y = magnetic[1]
