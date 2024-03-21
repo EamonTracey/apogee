@@ -16,7 +16,7 @@ APOGEE_ALTITUDE = 5200              # feet
 APOGEE_VELOCITY = 0                 # feet
 
 # Launch vehicle constants.
-VEHICLE_MASS = 1.1902231            # slugs
+VEHICLE_MASS = 1.2232296            # slugs
 
 class ActuationController:
     def __init__(self):
