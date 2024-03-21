@@ -36,7 +36,7 @@ HEADERS = [
 ]
 
 # Initialize various logging parameters.
-now = datetime.now().strftime("%m:%d:%Y:%H:%M:%S")
+now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
 OUTPUT_DATA_PATH = f"{OUTPUT_DIRECTORY}/fullscale_data_{now}.csv"
 OUTPUT_LOG_PATH = f"{OUTPUT_DIRECTORY}/fullscale_log_{now}.log"
 logging.basicConfig(filename=OUTPUT_LOG_PATH, level=logging.DEBUG, filemode="w")
@@ -94,17 +94,17 @@ logging.debug("Initializing the actuator.")
 actuator = ActuationController()
 logging.debug("The actuator is initialized.")
 
-logging.debug("Declare the flight stage to be GROUND.")
+logging.debug("The launch vehicle is currently on the ground.")
 state = State.GROUND
 
 start = time.time()
-logging.debug(f"Start time (by Unix epoch): {start}.")
+logging.debug(f"Start time (Unix epoch): {start}.")
 
 logging.debug("Beginning the ACS control loop.")
 while True:
     try:
         # Read current time.
-        current = time.time() - start
+        time_current = time.time() - start
 
          # Read BMP390 sensor.
         try:
@@ -161,7 +161,7 @@ while True:
 
         # Log the data
         writer.writerow([
-            current,
+            time_current,
             state,
             servo.percentage,
             actuator.apogee_prediction,
@@ -188,7 +188,7 @@ while True:
                 altitude_filtered,
                 acceleration_filtered,
                 velocity_filtered,
-                current,
+                time_current,
                 servo.percentage
             )
             if actuation_degree is not None:
