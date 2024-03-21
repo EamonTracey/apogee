@@ -72,6 +72,7 @@ class ActuationController:
         proportional = apogee_error
         integral = self.integral_previous + ((apogee_error + self.error_previous) * dt / 2)
 
+        # These are our proportional constants.
         Kp = 50
         Ki = 8
         Kg = 0.01
@@ -158,8 +159,8 @@ def calculate_drag(flap_angle, velocity):
         - 19.77 * flap_angle * mach_number
         + 146 * mach_number**2
         + 0.5031 * flap_angle**2 * mach_number
-        + 31.64 * flap_angle * mach_number ** 2
-        + 117.8 * mach_number ** 3
+        + 31.64 * flap_angle * mach_number**2
+        + 117.8 * mach_number**3
     )
 
     return drag
