@@ -115,6 +115,11 @@ def determine_state(state, altitude, acceleration, velocity):
                 return State.APOGEE
             else:
                 return state
+        # Apogee -> Apogee.
+        elif state == State.APOGEE:
+            return state
+        else:
+            return state
 
 
 class State(Enum):
