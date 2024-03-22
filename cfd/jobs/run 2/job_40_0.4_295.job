@@ -1,0 +1,14 @@
+#!/bin/bash
+#$ -M etracey@nd.edu
+#$ -m abe
+#$ -q long
+#$ -pe mpi-24 24
+#$ -N etracey_40_0.4_295
+#$ -cwd
+#$ -v DISPLAY
+
+module load ansys/2023R1
+
+unset noclobber
+
+fluent 3ddp -t1 -g < /afs/crc.nd.edu/user/e/etracey/cfd/journals/journal_40_0.4_295.jou > /afs/crc.nd.edu/user/e/etracey/cfd/jobs/log_40_0.4_295.log

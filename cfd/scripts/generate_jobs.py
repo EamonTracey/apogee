@@ -20,10 +20,10 @@ SCRIPT = "/afs/crc.nd.edu/user/e/etracey/cfd/scripts/cfd.py"
 JOURNALS_DIRECTORY = "/afs/crc.nd.edu/user/e/etracey/cfd/journals"
 JOBS_DIRECTORY = "/afs/crc.nd.edu/user/e/etracey/cfd/jobs"
 RESULTS_DIRECTORY = "/afs/crc.nd.edu/user/e/etracey/cfd/results"
-INPUT_CASE = "/afs/crc.nd.edu/user/e/etracey/cfd/orig/rocket_<DEGREE>deg.cas.h5"
+INPUT_CASE = "/afs/crc.nd.edu/user/e/etracey/cfd/models/rocket_<DEGREE>deg.cas.h5"
 
-degrees = ["0", "25", "40"]
-mach_numbers = ["0.3", "0.4", "0.5", "0.6"]
+degrees = ["0", "25", "35", "40"]
+mach_numbers = ["0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6"]
 temperatures = ["265", "295"]
 iterations = "1000"
 
