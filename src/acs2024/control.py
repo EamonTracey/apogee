@@ -18,8 +18,11 @@ APOGEE_VELOCITY = 0                 # feet
 # Launch vehicle constants.
 VEHICLE_MASS = 1.2232296            # slugs
 
+# Daily constants.
+GROUND_TEMPERATURE = 35             # fahrenheit
+
 # Luke constants.
-LUKE_APOGEE = 5653
+LUKE_APOGEE = 5653                  # feet
 
 class ActuationController:
     def __init__(self):
@@ -45,7 +48,7 @@ class ActuationController:
             return 0
 
         if self._first:
-            drag = calculate_drag(flap_angle, velocity)
+            drag = calculate_drag(flap_angle, velocity, altitude)
             apogee_prediction = predict_apogee(altitude, acceleration, velocity, drag)
             self.apogee_prediction = apogee_prediction
 
@@ -58,7 +61,7 @@ class ActuationController:
             return None
 
         # Predict apogee.
-        drag = calculate_drag(flap_angle, velocity)
+        drag = calculate_drag(flap_angle, velocity, altitude)
         apogee_prediction = predict_apogee(altitude, acceleration, velocity, drag)
         self.apogee_prediction = apogee_prediction
 
@@ -77,8 +80,16 @@ class ActuationController:
         Ki = 8
         Kg = 0.01
 
+        # Servo can deploy at a maximum speed of 35 degrees per 0.33 seconds.
+        max_servo_delta = dt * 35 / 0.33
+
         # Perform PI control!
-        pi = dt * (Kp * proportional + Ki * integral) * Kg + self.pi_previous
+        pi_delta = dt * (Kp * proportional + Ki * integral) * Kg
+        if pi_delta >= max_servo_delta:
+            pi_delta = max_servo_delta
+        elif pi_delta <= -max_servo_delta:
+            pi_delta = -max_servo_delta
+        pi = pi_delta + self.pi_previous
 
         # Contain the PI algorithm output within the bounds of actuation.
         if pi <= 0:
@@ -144,10 +155,9 @@ class State(Enum):
     APOGEE = 4
 
 
-def calculate_drag(flap_angle, velocity):
+def calculate_drag(flap_angle, velocity, altitude):
     # This is a rough calculation of mach number given velocity.
-    # Improvement: calculate based on temperature.
-    mach_number = velocity / 1125 
+    mach_number = velocity / math.sqrt(2403.044 * (GROUND_TEMPERATURE - 0.00356 * altitude + 459.67))
 
     # This equation is based on interpolated CFD results.
     # Output is pound-force.
