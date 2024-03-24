@@ -9,16 +9,16 @@ G = 32.17405                        # feet / second^2
 LAUNCH_ALTITUDE = 100               # feet
 LAUNCH_ACCELERATION = 200           # feet / second^2
 LAUNCH_ALTITUDE_CRITICAL = 300      # feet / second^2
-BURNOUT_ALTITUDE = 1200             # feet
+BURNOUT_ALTITUDE = 900              # feet
 BURNOUT_ACCELERATION = 0            # feet / second^2
-BURNOUT_ALTITUDE_CRITICAL = 1700    # feet
+BURNOUT_ALTITUDE_CRITICAL = 1200    # feet
 APOGEE_ALTITUDE = 5200              # feet
 APOGEE_VELOCITY = 0                 # feet
 
 # Launch vehicle constants.
 VEHICLE_MASS = 1.2232296            # slugs
 
-# Daily constants.
+# Weather constants.
 GROUND_TEMPERATURE = 35             # fahrenheit
 
 # Luke constants.
