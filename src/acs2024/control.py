@@ -20,6 +20,7 @@ VEHICLE_MASS = 1.2232296            # slugs
 
 # Weather constants.
 GROUND_TEMPERATURE = 35             # fahrenheit
+GROUND_PRESSURE = 2116              # pounds / foot^2
 
 # Luke constants.
 LUKE_APOGEE = 5653                  # feet
@@ -157,7 +158,7 @@ class State(Enum):
 
 def calculate_drag(flap_angle, velocity, altitude):
     # This is a rough calculation of mach number given velocity.
-    mach_number = velocity / math.sqrt(2403.044 * (GROUND_TEMPERATURE - 0.00356 * altitude + 459.67))
+    mach_number = velocity / math.sqrt(2403.044 * (atmosphere_temperature(altitude) + 459.67))
 
     # This equation is based on interpolated CFD results.
     # Output is pound-force.
@@ -186,3 +187,17 @@ def predict_apogee(altitude, acceleration, velocity, drag):
     apogee_prediction = altitude + apogee_delta
 
     return apogee_prediction
+
+def atmosphere_temperature(altitude):
+    # Returns temperature in Fahrenheit.
+    return GROUND_TEMPERATURE - 0.00356 * altitude
+
+def atmosphere_pressure(altitude):
+    # Returns pressure in pounds / foot^2.
+    return GROUND_PRESSURE * ((atmosphere_temperature(altitude) + 459.7) / 518.6)**5.256
+
+def atmosphere_density(altitude):
+    # Returns density in slugs / foot^3.
+    temperature = atmosphere_temperature(altitude)
+    pressure = atmosphere_pressure(altitude)
+    return pressure / (1718 * (temperature + 459.7))
