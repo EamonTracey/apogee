@@ -186,7 +186,6 @@ while True:
             actuation_degree = actuator.calculate_actuation(
                 state,
                 altitude_filtered,
-                acceleration_filtered,
                 velocity_filtered,
                 time_current,
                 servo.percentage
