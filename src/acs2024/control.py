@@ -25,6 +25,57 @@ GROUND_PRESSURE = 2116              # pounds / foot^2
 # Luke constants.
 LUKE_APOGEE = 5723                  # feet
 
+
+class State(Enum):
+    """
+    The State class enumerates the launch vehicle's possible states.
+    """
+
+    GROUND = 0
+    LAUNCHED = 1
+    BURNOUT = 2
+    OVERSHOOT = 3
+    APOGEE = 4
+
+
+def determine_state(state, altitude, acceleration, velocity):
+        # Ground -> Launched.
+        if state == State.GROUND:
+            if (altitude > LAUNCH_ALTITUDE and acceleration > LAUNCH_ACCELERATION) or altitude > LAUNCH_ALTITUDE_CRITICAL:
+                return State.LAUNCHED
+            else:
+                return state
+        # Launched -> Burnout.
+        elif state == State.LAUNCHED:
+            if (BURNOUT_ALTITUDE < altitude < APOGEE_ALTITUDE and acceleration < BURNOUT_ACCELERATION) or altitude > BURNOUT_ALTITUDE_CRITICAL:
+                return State.BURNOUT
+            else:
+                return state
+        # Burnout -> Overshoot.
+        elif state == State.BURNOUT:
+            if altitude > APOGEE_ALTITUDE:
+                return State.OVERSHOOT
+            else:
+                return state
+        # Burnout -> Apogee.
+        elif state == State.BURNOUT:
+            if velocity < APOGEE_VELOCITY:
+                return State.APOGEE
+            else:
+                return state
+        # Overshoot -> Apogee.
+        elif state == State.OVERSHOOT:
+            if velocity < APOGEE_VELOCITY:
+                return State.APOGEE
+            else:
+                return state
+        # Apogee -> Apogee.
+        elif state == State.APOGEE:
+            return state
+        else:
+            return state
+
+
 class ActuationController:
     def __init__(self):
         self.error_previous = 0
@@ -106,55 +157,6 @@ class ActuationController:
 
         return pi
 
-
-class State(Enum):
-    """
-    The State class enumerates the launch vehicle's possible states.
-    """
-
-    GROUND = 0
-    LAUNCHED = 1
-    BURNOUT = 2
-    OVERSHOOT = 3
-    APOGEE = 4
-
-
-def determine_state(state, altitude, acceleration, velocity):
-        # Ground -> Launched.
-        if state == State.GROUND:
-            if (altitude > LAUNCH_ALTITUDE and acceleration > LAUNCH_ACCELERATION) or altitude > LAUNCH_ALTITUDE_CRITICAL:
-                return State.LAUNCHED
-            else:
-                return state
-        # Launched -> Burnout.
-        elif state == State.LAUNCHED:
-            if (BURNOUT_ALTITUDE < altitude < APOGEE_ALTITUDE and acceleration < BURNOUT_ACCELERATION) or altitude > BURNOUT_ALTITUDE_CRITICAL:
-                return State.BURNOUT
-            else:
-                return state
-        # Burnout -> Overshoot.
-        elif state == State.BURNOUT:
-            if altitude > APOGEE_ALTITUDE:
-                return State.OVERSHOOT
-            else:
-                return state
-        # Burnout -> Apogee.
-        elif state == State.BURNOUT:
-            if velocity < APOGEE_VELOCITY:
-                return State.APOGEE
-            else:
-                return state
-        # Overshoot -> Apogee.
-        elif state == State.OVERSHOOT:
-            if velocity < APOGEE_VELOCITY:
-                return State.APOGEE
-            else:
-                return state
-        # Apogee -> Apogee.
-        elif state == State.APOGEE:
-            return state
-        else:
-            return state
 
 def predict_apogee(flap_angle, altitude, velocity):
     # Use 0.5 second timestep.
