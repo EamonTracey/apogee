@@ -13,19 +13,19 @@ module load ansys/2023R1
 
 unset noclobber
 
-fluent 3ddp -t1 -g < <JOURNAL FILE> > <LOG FILE>
+fluent 3ddp -t1 -g < \"<JOURNAL FILE>\" > \"<LOG FILE>\"
 """
 
-SCRIPT = "/afs/crc.nd.edu/user/e/etracey/cfd/scripts/cfd.py"
-JOURNALS_DIRECTORY = "/afs/crc.nd.edu/user/e/etracey/cfd/journals"
-JOBS_DIRECTORY = "/afs/crc.nd.edu/user/e/etracey/cfd/jobs"
-RESULTS_DIRECTORY = "/afs/crc.nd.edu/user/e/etracey/cfd/results"
-INPUT_CASE = "/afs/crc.nd.edu/user/e/etracey/cfd/models/rocket_<DEGREE>deg.cas.h5"
+SCRIPT = os.path.abspath("../scripts/cfd.py")
+JOURNALS_DIRECTORY = os.path.abspath("../journals")
+JOBS_DIRECTORY = os.path.abspath("../jobs")
+RESULTS_DIRECTORY = os.path.abspath("../results")
+INPUT_CASE = os.path.abspath("../models/rocket_<DEGREE>deg.cas.h5")
 
 degrees = ["0", "25", "35", "40"]
-mach_numbers = ["0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6"]
+mach_numbers = ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6"]
 temperatures = ["265", "295"]
-iterations = "1000"
+iterations = "500"
 
 for degree in degrees:
     for mach_number in mach_numbers:
@@ -59,4 +59,3 @@ for degree in degrees:
             job = JOB.replace("<NAME>", "etracey_" + name).replace("<JOURNAL FILE>", journal_file).replace("<LOG FILE>", log_file)
             with open(job_file, "w") as f:
                 f.write(job)
-
