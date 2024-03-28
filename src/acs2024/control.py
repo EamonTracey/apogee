@@ -16,14 +16,14 @@ APOGEE_ALTITUDE = 5200              # feet
 APOGEE_VELOCITY = 0                 # feet
 
 # Launch vehicle constants.
-VEHICLE_MASS = 1.2232296            # slugs
+VEHICLE_MASS = 1.154                # slugs
 
 # Weather constants.
 GROUND_TEMPERATURE = 35             # fahrenheit
 GROUND_PRESSURE = 2116              # pounds / foot^2
 
 # Luke constants.
-LUKE_APOGEE = 5653                  # feet
+LUKE_APOGEE = 5723                  # feet
 
 class ActuationController:
     def __init__(self):
@@ -173,6 +173,9 @@ def calculate_drag(flap_angle, velocity, altitude):
         + 31.64 * flap_angle * mach_number**2
         + 117.8 * mach_number**3
     )
+
+    # Drag is proportional to air density.
+    drag *= atmosphere_density(altitude) / atmosphere_density(0)
 
     return drag
 
