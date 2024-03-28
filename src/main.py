@@ -17,7 +17,7 @@ OUTPUT_DIRECTORY = "/home/acs/data/fullscale"
 HEADERS = [
     "Time",
     "State",
-    "Servo Percentage",
+    "Flap Angle",
     "Apogee Prediction",
     "Altitude Filtered",
     "Acceleration Filtered",
