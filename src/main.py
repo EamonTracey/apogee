@@ -20,8 +20,8 @@ HEADERS = [
     "Flap Angle",
     "Apogee Prediction",
     "Altitude Filtered",
-    "Acceleration Filtered",
     "Velocity Filtered",
+    "Acceleration Filtered",
     "Altitude",
     "Acceleration X",
     "Acceleration Y",
@@ -141,8 +141,8 @@ while True:
         try:
             data_filter.filter_data(altitude, acceleration_z)
             altitude_filtered = data_filter.kalman_altitude
-            acceleration_filtered = data_filter.kalman_acceleration
             velocity_filtered = data_filter.kalman_velocity
+            acceleration_filtered = data_filter.kalman_acceleration
         except Exception as e:
             logging.exception(f"Error filtering the data: {e}.")
             logging.info(f"Filter last altitude: {altitude_filtered}.")
@@ -153,7 +153,7 @@ while True:
 
         # Determine the state of the ACS.
         try:
-            state = determine_state(state, altitude_filtered, acceleration_filtered, velocity_filtered)
+            state = determine_state(state, altitude_filtered, velocity_filtered, acceleration_filtered)
         except Exception as e:
             logging.exception(f"Error within state determination: {e}.")
             logging.info(f"Determinator last state: {state}.")
@@ -169,8 +169,8 @@ while True:
             flap_angle,
             actuator.apogee_prediction,
             altitude_filtered,
-            acceleration_filtered,
             velocity_filtered,
+            acceleration_filtered,
             altitude,
             acceleration_x,
             acceleration_y,

@@ -38,7 +38,7 @@ class State(Enum):
     APOGEE = 4
 
 
-def determine_state(state, altitude, acceleration, velocity):
+def determine_state(state, altitude, velocity, acceleration):
         # Ground -> Launched.
         if state == State.GROUND:
             if (altitude > LAUNCH_ALTITUDE and acceleration > LAUNCH_ACCELERATION) or altitude > LAUNCH_ALTITUDE_CRITICAL:
