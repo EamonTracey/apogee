@@ -89,7 +89,7 @@ class ActuationController:
         # We want to log this.
         self.apogee_prediction = LUKE_APOGEE
 
-    def calculate_actuation(self, state, flap_angle, altitude, velocity, time_):
+    def calculate_actuation(self, time_, state, flap_angle, altitude, velocity):
         # Returns the value to pass to servo.rotate.
 
         if state == State.GROUND or state == State.LAUNCHED:

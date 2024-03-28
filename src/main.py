@@ -187,11 +187,11 @@ while True:
         # Run actuation control algorithm.
         try:
             actuation_degree = actuator.calculate_actuation(
+                time_current,
                 state,
                 flap_angle,
                 altitude_filtered,
-                velocity_filtered,
-                time_current
+                velocity_filtered
             )
             if actuation_degree is not None:
                 servo.rotate(actuation_degree)
