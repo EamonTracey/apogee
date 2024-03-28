@@ -4,6 +4,7 @@ import time
 
 # Physical constants.
 G = 32.17405                        # feet / second^2
+DENSITY_SEA_LEVEL = 0.002378        # slugs / foot^3
 
 # State determination constants.
 LAUNCH_ALTITUDE = 100               # feet
@@ -50,7 +51,7 @@ class ActuationController:
 
         if self._first:
             drag = calculate_drag(flap_angle, velocity, altitude)
-            apogee_prediction = predict_apogee(altitude, acceleration, velocity, drag)
+            apogee_prediction = predict_apogee(flap_angle, altitude, velocity)
             self.apogee_prediction = apogee_prediction
 
             self.error_previous = apogee_prediction - APOGEE_ALTITUDE
@@ -63,7 +64,7 @@ class ActuationController:
 
         # Predict apogee.
         drag = calculate_drag(flap_angle, velocity, altitude)
-        apogee_prediction = predict_apogee(altitude, acceleration, velocity, drag)
+        apogee_prediction = predict_apogee(flap_angle, altitude, velocity)
         self.apogee_prediction = apogee_prediction
 
         # Calculate error and store timestep.
@@ -106,6 +107,19 @@ class ActuationController:
 
         return pi
 
+
+class State(Enum):
+    """
+    The State class enumerates the launch vehicle's possible states.
+    """
+
+    GROUND = 0
+    LAUNCHED = 1
+    BURNOUT = 2
+    OVERSHOOT = 3
+    APOGEE = 4
+
+
 def determine_state(state, altitude, acceleration, velocity):
         # Ground -> Launched.
         if state == State.GROUND:
@@ -143,22 +157,42 @@ def determine_state(state, altitude, acceleration, velocity):
         else:
             return state
 
+def predict_apogee(flap_angle, altitude, velocity):
+    # Use 0.02 second timestep.
+    dt = 1 / 50
 
-class State(Enum):
-    """
-    The State class enumerates the launch vehicle's possible states.
-    """
+    # The apogee prediction and current velocity
+    # are updated in each timestep.
+    apogee_prediction = altitude
+    velocity_current = velocity
 
-    GROUND = 0
-    LAUNCHED = 1
-    BURNOUT = 2
-    OVERSHOOT = 3
-    APOGEE = 4
+    # Fp calculates the acceleration at each timestep.
+    Fp = lambda a, v: -G - calculate_drag(flap_angle, v, a) / VEHICLE_MASS
 
+    # RK4 magic.
+    while velocity_current > 0:
+        kx1 = velocity_current
+        kp1 = Fp(apogee_prediction, velocity_current)
+
+        kx2 = velocity_current + 0.5 * kp1 * dt
+        kp2 = Fp(apogee_prediction + 0.5 * kx1 * dt, velocity_current + 0.5 * kp1 * dt)
+
+        kx3 = velocity_current + 0.5 * kp2 * dt
+        kp3 = Fp(apogee_prediction + 0.5 * kx2 * dt, velocity_current + 0.5 * kp2 * dt)
+
+        kx4 = velocity_current + kp3 * dt
+        kp4 = Fp(apogee_prediction + kx3 * dt, velocity_current + kp3 * dt)
+
+        apogee_prediction += (1 / 6) * (kx1 + 2 * kx2 + 2 * kx3 + kx4) * dt
+        velocity_current += (1 / 6) * (kp1 + 2 * kp2 + 2 * kp3 + kp4) * dt
+
+    return apogee_prediction
 
 def calculate_drag(flap_angle, velocity, altitude):
     # This is a rough calculation of mach number given velocity.
-    mach_number = velocity / math.sqrt(2403.044 * (atmosphere_temperature(altitude) + 459.67))
+    pressure = atmosphere_pressure(altitude)
+    density = atmosphere_density(altitude)
+    mach_number = velocity / math.sqrt(1.4 * pressure / density)
 
     # This equation is based on interpolated CFD results.
     # Output is pound-force.
@@ -175,21 +209,13 @@ def calculate_drag(flap_angle, velocity, altitude):
     )
 
     # Drag is proportional to air density.
-    drag *= atmosphere_density(altitude) / atmosphere_density(0)
+    drag *= atmosphere_density(altitude) / DENSITY_SEA_LEVEL
+
+    # If our interpolation is below 0, return 0.
+    if drag <= 0:
+        return 0
 
     return drag
-
-def predict_apogee(altitude, acceleration, velocity, drag):
-    if drag <= 0:
-        return altitude + (velocity ** 2) / (2 * G)
-
-    radicand = VEHICLE_MASS * G / drag
-    velocity_terminal = velocity * math.sqrt(radicand)
-
-    apogee_delta = velocity_terminal ** 2 * math.log(1 + velocity ** 2 / velocity_terminal ** 2) / (2 * G)
-    apogee_prediction = altitude + apogee_delta
-
-    return apogee_prediction
 
 def atmosphere_temperature(altitude):
     # Returns temperature in Fahrenheit.
@@ -204,3 +230,12 @@ def atmosphere_density(altitude):
     temperature = atmosphere_temperature(altitude)
     pressure = atmosphere_pressure(altitude)
     return pressure / (1718 * (temperature + 459.7))
+
+def predict_apogee_legacy(altitude, velocity, drag):
+    radicand = VEHICLE_MASS * G / drag
+    velocity_terminal = velocity * math.sqrt(radicand)
+
+    apogee_delta = velocity_terminal ** 2 * math.log(1 + velocity ** 2 / velocity_terminal ** 2) / (2 * G)
+    apogee_prediction = altitude + apogee_delta
+
+    return apogee_prediction
