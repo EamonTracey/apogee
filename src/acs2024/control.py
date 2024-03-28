@@ -89,7 +89,7 @@ class ActuationController:
         # We want to log this.
         self.apogee_prediction = LUKE_APOGEE
 
-    def calculate_actuation(self, state, altitude, velocity, time_, flap_angle):
+    def calculate_actuation(self, state, flap_angle, altitude, velocity, time_):
         # Returns the value to pass to servo.rotate.
 
         if state == State.GROUND or state == State.LAUNCHED:
@@ -100,7 +100,7 @@ class ActuationController:
             return 0
 
         if self._first:
-            drag = calculate_drag(flap_angle, velocity, altitude)
+            drag = calculate_drag(flap_angle, altitude, velocity)
             apogee_prediction = predict_apogee(flap_angle, altitude, velocity)
             self.apogee_prediction = apogee_prediction
 
@@ -113,7 +113,7 @@ class ActuationController:
             return None
 
         # Predict apogee.
-        drag = calculate_drag(flap_angle, velocity, altitude)
+        drag = calculate_drag(flap_angle, altitude, velocity)
         apogee_prediction = predict_apogee(flap_angle, altitude, velocity)
         self.apogee_prediction = apogee_prediction
 
@@ -168,7 +168,7 @@ def predict_apogee(flap_angle, altitude, velocity):
     velocity_current = velocity
 
     # Fp calculates the acceleration at each timestep.
-    Fp = lambda a, v: -G - calculate_drag(flap_angle, v, a) / VEHICLE_MASS
+    Fp = lambda a, v: -G - calculate_drag(flap_angle, a, v) / VEHICLE_MASS
 
     # RK4 magic.
     while velocity_current > 0:
@@ -189,7 +189,7 @@ def predict_apogee(flap_angle, altitude, velocity):
 
     return apogee_prediction
 
-def calculate_drag(flap_angle, velocity, altitude):
+def calculate_drag(flap_angle, altitude, velocity):
     # This is a rough calculation of mach number given velocity.
     pressure = atmosphere_pressure(altitude)
     density = atmosphere_density(altitude)
@@ -217,6 +217,10 @@ def calculate_drag(flap_angle, velocity, altitude):
         return 0
 
     return drag
+
+def servo_percentage_to_flap_angle(servo_percentage):
+    # Assume servo percentage = flap angle.
+    return servo_percentage
 
 def atmosphere_temperature(altitude):
     # Returns temperature in Fahrenheit.

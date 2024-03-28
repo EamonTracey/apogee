@@ -6,7 +6,7 @@ from datetime import datetime
 import logging
 import time
 
-from acs2024.control import ActuationController, State, determine_state
+from acs2024.control import ActuationController, State, determine_state, servo_percentage_to_flap_angle
 from acs2024.devices.piezo_buzzer import PiezoBuzzer
 from acs2024.devices.sensors import BMP390, BNO055
 from acs2024.devices.servo_motor import ServoMotor
@@ -159,11 +159,14 @@ while True:
             logging.info(f"Determinator last state: {state}.")
             continue
 
+        # Determine the current flap angle.
+        flap_angle = servo_percentage_to_flap_angle(servo.percentage)
+
         # Log the data
         writer.writerow([
             time_current,
             state,
-            servo.percentage,
+            flap_angle,
             actuator.apogee_prediction,
             altitude_filtered,
             acceleration_filtered,
@@ -185,10 +188,10 @@ while True:
         try:
             actuation_degree = actuator.calculate_actuation(
                 state,
+                flap_angle,
                 altitude_filtered,
                 velocity_filtered,
-                time_current,
-                servo.percentage
+                time_current
             )
             if actuation_degree is not None:
                 servo.rotate(actuation_degree)
