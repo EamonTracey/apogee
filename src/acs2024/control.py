@@ -4,7 +4,6 @@ import time
 
 # Physical constants.
 G = 32.17405                        # feet / second^2
-DENSITY_SEA_LEVEL = 0.002378        # slugs / foot^3
 
 # State determination constants.
 LAUNCH_ALTITUDE = 100               # feet
@@ -39,7 +38,7 @@ class ActuationController:
         # We want to log this.
         self.apogee_prediction = LUKE_APOGEE
 
-    def calculate_actuation(self, state, altitude, acceleration, velocity, time_, flap_angle):
+    def calculate_actuation(self, state, altitude, velocity, time_, flap_angle):
         # Returns the value to pass to servo.rotate.
 
         if state == State.GROUND or state == State.LAUNCHED:
@@ -158,8 +157,8 @@ def determine_state(state, altitude, acceleration, velocity):
             return state
 
 def predict_apogee(flap_angle, altitude, velocity):
-    # Use 0.02 second timestep.
-    dt = 1 / 50
+    # Use 0.5 second timestep.
+    dt = 1 / 2
 
     # The apogee prediction and current velocity
     # are updated in each timestep.
@@ -209,7 +208,7 @@ def calculate_drag(flap_angle, velocity, altitude):
     )
 
     # Drag is proportional to air density.
-    drag *= atmosphere_density(altitude) / DENSITY_SEA_LEVEL
+    drag *= atmosphere_density(altitude) / 0.002378
 
     # If our interpolation is below 0, return 0.
     if drag <= 0:
