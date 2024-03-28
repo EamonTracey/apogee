@@ -100,7 +100,6 @@ class ActuationController:
             return 0
 
         if self._first:
-            drag = calculate_drag(flap_angle, altitude, velocity)
             apogee_prediction = predict_apogee(flap_angle, altitude, velocity)
             self.apogee_prediction = apogee_prediction
 
@@ -113,7 +112,6 @@ class ActuationController:
             return None
 
         # Predict apogee.
-        drag = calculate_drag(flap_angle, altitude, velocity)
         apogee_prediction = predict_apogee(flap_angle, altitude, velocity)
         self.apogee_prediction = apogee_prediction
 

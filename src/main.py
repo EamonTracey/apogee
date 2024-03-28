@@ -194,7 +194,8 @@ while True:
                 velocity_filtered
             )
             if actuation_degree is not None:
-                servo.rotate(actuation_degree)
+                flap_angle_new = servo_percentage_to_flap_angle(actuation_degree)
+                servo.rotate(flap_angle_new)
         except Exception as e:
             logging.exception(f"Error within actuation control: {e}.")
     except KeyboardInterrupt:
