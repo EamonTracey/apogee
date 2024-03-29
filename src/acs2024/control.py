@@ -196,15 +196,16 @@ def calculate_drag(flap_angle, altitude, velocity):
     # This equation is based on interpolated CFD results.
     # Output is pound-force.
     drag = 0.224809 * (
-        -20.74
-        + 4.351 * flap_angle
-        + 131.1 * mach_number
-        - 0.1112 * flap_angle**2
-        - 19.77 * flap_angle * mach_number
-        + 146 * mach_number**2
-        + 0.5031 * flap_angle**2 * mach_number
-        + 31.64 * flap_angle * mach_number**2
-        + 117.8 * mach_number**3
+        -2.5641
+        - 1.125 * flap_angle
+        + 42.1162 * mach_number
+        + 0.1118 * flap_angle**2
+        - 12.5214 * flap_angle * mach_number
+        + 305.9836 * mach_number**2
+        - 0.0021 * flap_angle**3
+        + 0.3263 * flap_angle**2 * mach_number
+        + 31.0821 * flap_angle * mach_number**2
+        + 5.1398 * mach_number**3
     )
 
     # Drag is proportional to air density.
