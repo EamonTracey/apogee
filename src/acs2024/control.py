@@ -209,7 +209,7 @@ def calculate_drag(flap_angle, altitude, velocity):
     )
 
     # Drag is proportional to air density.
-    drag *= atmosphere_density(altitude) / 0.002378
+    drag *= atmosphere_density(altitude) / 0.0025845
 
     # If our interpolation is below 0, return 0.
     if drag <= 0:
