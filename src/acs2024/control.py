@@ -128,7 +128,7 @@ class ActuationController:
         # These are our proportional constants.
         Kp = 50
         Ki = 8
-        Kg = 0.01
+        Kg = 0.0125
 
         # Servo can deploy at a maximum speed of 35 degrees per 0.33 seconds.
         max_servo_delta = dt * 35 / 0.33
