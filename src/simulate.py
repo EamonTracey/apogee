@@ -11,7 +11,7 @@ time.sleep(1)
 
 readline = lambda f: f.readline().strip().split(",")
 
-data = open("../data/Fullscale 3/fullscale_3_cut.csv")
+data = open("../data/Fullscale 2/fullscale_2_cut.csv")
 headers = readline(data)
 
 time_i = headers.index("Time")
@@ -41,9 +41,9 @@ while True:
     flap_angle = float(line[flap_i])
     dt = time_ - last_time
 
-    test_state = determine_state(test_state, altitude, acceleration, velocity)
+    test_state = determine_state(test_state, altitude, velocity, acceleration)
     test_prediction = predict_apogee(test_actuation or 0, altitude, velocity)
-    test_actuation = actuator.calculate_actuation(test_state, test_actuation or 0, altitude, velocity, time_)
+    test_actuation = actuator.calculate_actuation(time_, test_state, test_actuation or 0, altitude, velocity)
     if test_actuation is not None:
         c += 1
         s.rotate(test_actuation)

@@ -3,7 +3,6 @@ import time
 import board
 
 from acs2024.devices.piezo_buzzer import PiezoBuzzer
-from acs2024.devices.servo_motor import ServoMotor
 
 ##################################################
 
