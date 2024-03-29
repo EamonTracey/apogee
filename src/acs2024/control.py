@@ -233,12 +233,3 @@ def atmosphere_density(altitude):
     temperature = atmosphere_temperature(altitude)
     pressure = atmosphere_pressure(altitude)
     return pressure / (1718 * (temperature + 459.7))
-
-def predict_apogee_legacy(altitude, velocity, drag):
-    radicand = VEHICLE_MASS * G / drag
-    velocity_terminal = velocity * math.sqrt(radicand)
-
-    apogee_delta = velocity_terminal ** 2 * math.log(1 + velocity ** 2 / velocity_terminal ** 2) / (2 * G)
-    apogee_prediction = altitude + apogee_delta
-
-    return apogee_prediction
