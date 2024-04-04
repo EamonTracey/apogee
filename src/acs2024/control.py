@@ -12,7 +12,7 @@ LAUNCH_ALTITUDE_CRITICAL = 300      # feet / second^2
 BURNOUT_ALTITUDE = 800              # feet
 BURNOUT_ACCELERATION = 0            # feet / second^2
 BURNOUT_ALTITUDE_CRITICAL = 1200    # feet
-APOGEE_ALTITUDE = 5000              # feet
+APOGEE_ALTITUDE = 5200              # feet
 APOGEE_VELOCITY = 0                 # feet
 
 # Launch vehicle constants.
@@ -124,7 +124,7 @@ class ActuationController:
         # These are our proportional constants.
         Kp = 50
         Ki = 8
-        Kg = 0.0125
+        Kg = 0.01
 
         # Servo can deploy at a maximum speed of 35 degrees per 0.33 seconds.
         max_servo_delta = dt * 35 / 0.33
