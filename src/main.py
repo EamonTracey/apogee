@@ -13,7 +13,7 @@ from acs2024.devices.servo_motor import ServoMotor
 from acs2024.filter import DataFilter
 
 # Output data constants.
-OUTPUT_DIRECTORY = "/home/acs/data/fullscale"
+OUTPUT_DIRECTORY = "/home/acs/data/huntsville"
 HEADERS = [
     "Time",
     "State",
@@ -37,8 +37,8 @@ HEADERS = [
 
 # Initialize various logging parameters.
 now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
-OUTPUT_DATA_PATH = f"{OUTPUT_DIRECTORY}/fullscale_data_{now}.csv"
-OUTPUT_LOG_PATH = f"{OUTPUT_DIRECTORY}/fullscale_log_{now}.log"
+OUTPUT_DATA_PATH = f"{OUTPUT_DIRECTORY}/huntsville_data_{now}.csv"
+OUTPUT_LOG_PATH = f"{OUTPUT_DIRECTORY}/huntsville_log_{now}.log"
 logging.basicConfig(filename=OUTPUT_LOG_PATH, level=logging.DEBUG, filemode="w")
 logging.getLogger().addHandler(logging.StreamHandler())
 
