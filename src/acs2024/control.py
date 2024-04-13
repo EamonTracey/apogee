@@ -16,14 +16,14 @@ APOGEE_ALTITUDE = 5200              # feet
 APOGEE_VELOCITY = 0                 # feet
 
 # Launch vehicle constants.
-VEHICLE_MASS = 1.213315217          # slugs
+VEHICLE_MASS = 1.215450311          # slugs
 
 # Weather constants.
-GROUND_TEMPERATURE = 75             # fahrenheit
-GROUND_PRESSURE = 2136              # pounds / foot^2
+GROUND_TEMPERATURE = 74             # fahrenheit
+GROUND_PRESSURE = 2141              # pounds / foot^2
 
 # Luke constants.
-LUKE_APOGEE = 5553                  # feet
+LUKE_APOGEE = 5613                  # feet
 
 
 class State(Enum):
