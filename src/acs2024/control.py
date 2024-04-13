@@ -16,11 +16,11 @@ APOGEE_ALTITUDE = 5200              # feet
 APOGEE_VELOCITY = 0                 # feet
 
 # Launch vehicle constants.
-VEHICLE_MASS = 1.218                # slugs
+VEHICLE_MASS = 1.213315217          # slugs
 
 # Weather constants.
-GROUND_TEMPERATURE = 52             # fahrenheit
-GROUND_PRESSURE = 2125              # pounds / foot^2
+GROUND_TEMPERATURE = 75             # fahrenheit
+GROUND_PRESSURE = 2136              # pounds / foot^2
 
 # Luke constants.
 LUKE_APOGEE = 5553                  # feet
@@ -154,7 +154,7 @@ class ActuationController:
 
 def predict_apogee(flap_angle, altitude, velocity):
     # Use 0.5 second timestep.
-    dt = 1 / 2
+    dt = 0.5
 
     # The apogee prediction and current velocity
     # are updated in each timestep.
